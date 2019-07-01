@@ -4,8 +4,8 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <AssemblyName>Awesome.Net.Workflows.Abstractions</AssemblyName>
-    <PackageId>Awesome.Net.Workflows.Abstractions</PackageId>
+    <AssemblyName>Awesome.Net.AbpExtensions</AssemblyName>
+    <PackageId>Awesome.Net.AbpExtensions</PackageId>
     <AssetTargetFallback>$(AssetTargetFallback);portable-net45+win8+wp8+wpa81;</AssetTargetFallback>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
@@ -14,16 +14,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Awesome\Net\Workflows\Localization\*.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Volo.Abp.Localization" Version="0.18.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Awesome.Net.Liquid\Awesome.Net.Liquid.csproj" />
-    <ProjectReference Include="..\Awesome.Net.Scripting\Awesome.Net.Scripting.csproj" />
+    <PackageReference Include="Volo.Abp.Core" Version="0.18.1" />
+    <PackageReference Include="Volo.Abp.Guids" Version="0.18.1" />
   </ItemGroup>
 
 </Project>
