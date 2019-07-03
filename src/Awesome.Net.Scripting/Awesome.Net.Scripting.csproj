@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Awesome.Net.AbpExtensions\Awesome.Net.AbpExtensions.csproj" />
+    <ProjectReference Include="..\Awesome.Net.Extensions\Awesome.Net.Extensions.csproj" />
   </ItemGroup>
 
 </Project>

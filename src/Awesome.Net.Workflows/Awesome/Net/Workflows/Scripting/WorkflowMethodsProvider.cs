@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Awesome.Net.Scripting;
-using Awesome.Net.Workflows.Models;
+using Awesome.Net.Workflows.Contexts;
 
 namespace Awesome.Net.Workflows.Scripting
 {
@@ -20,56 +20,60 @@ namespace Awesome.Net.Workflows.Scripting
         {
             _workflowMethod = new GlobalMethod
             {
-                Name = "workflow",
-                Method = serviceProvider => (Func<object>)(() => workflowContext)
+                Name = "workflow", Method = serviceProvider => (Func<object>) (() => workflowContext)
             };
 
             _workflowIdMethod = new GlobalMethod
             {
                 Name = "workflowId",
-                Method = serviceProvider => (Func<string>)(() => workflowContext.Workflow.WorkflowId)
+                Method = serviceProvider => (Func<string>) (() => workflowContext.Workflow.WorkflowId)
             };
 
             _inputMethod = new GlobalMethod
             {
                 Name = "input",
-                Method = serviceProvider => (Func<string, object>)(name => workflowContext.Input[name])
+                Method = serviceProvider => (Func<string, object>) (name => workflowContext.Input[name])
             };
 
             _outputMethod = new GlobalMethod
             {
                 Name = "output",
-                Method = serviceProvider => (Action<string, object>)((name, value) => workflowContext.Output[name] = value)
+                Method = serviceProvider =>
+                    (Action<string, object>) ((name, value) => workflowContext.Output[name] = value)
             };
 
             _propertyMethod = new GlobalMethod
             {
                 Name = "property",
-                Method = serviceProvider => (Func<string, object>)((name) => workflowContext.Properties[name])
+                Method = serviceProvider => (Func<string, object>) ((name) => workflowContext.Properties[name])
             };
 
             _setPropertyMethod = new GlobalMethod
             {
                 Name = "setProperty",
-                Method = serviceProvider => (Action<string, object>)((name, value) => workflowContext.Properties[name] = value)
+                Method = serviceProvider =>
+                    (Action<string, object>) ((name, value) => workflowContext.Properties[name] = value)
             };
 
             _resultMethod = new GlobalMethod
             {
-                Name = "lastResult",
-                Method = serviceProvider => (Func<object>)(() => workflowContext.LastResult)
+                Name = "lastResult", Method = serviceProvider => (Func<object>) (() => workflowContext.LastResult)
             };
 
             _correlationIdMethod = new GlobalMethod
             {
                 Name = "correlationId",
-                Method = serviceProvider => (Func<string>)(() => workflowContext.Workflow.CorrelationId)
+                Method = serviceProvider => (Func<string>) (() => workflowContext.Workflow.CorrelationId)
             };
         }
 
         public IEnumerable<GlobalMethod> GetMethods()
         {
-            return new[] { _workflowMethod, _workflowIdMethod, _inputMethod, _outputMethod, _propertyMethod, _resultMethod, _correlationIdMethod, _setPropertyMethod };
+            return new[]
+            {
+                _workflowMethod, _workflowIdMethod, _inputMethod, _outputMethod, _propertyMethod, _resultMethod,
+                _correlationIdMethod, _setPropertyMethod
+            };
         }
     }
 }

@@ -9,6 +9,7 @@ namespace Awesome.Net.Workflows.Models
     public class WorkflowType
     {
         public Guid Id { get; set; }
+
         public string WorkflowTypeId { get; set; }
 
         /// <summary>

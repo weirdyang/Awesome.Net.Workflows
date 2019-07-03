@@ -14,11 +14,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Awesome\Net\Workflows\Localization\*.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Volo.Abp.Localization" Version="0.18.1" />
+    <PackageReference Include="Microsoft.Extensions.Localization.Abstractions" Version="2.2.0" />
   </ItemGroup>
 
   <ItemGroup>

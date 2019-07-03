@@ -1,95 +1,76 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Awesome.Net.Workflows.Contexts;
 using Awesome.Net.Workflows.Expressions;
-using Awesome.Net.Workflows.Localization;
 using Awesome.Net.Workflows.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Newtonsoft.Json.Linq;
-using Volo.Abp;
-using Volo.Abp.MultiTenancy;
-using Volo.Abp.Timing;
-using Volo.Abp.Users;
 
 namespace Awesome.Net.Workflows.Activities
 {
     public abstract class Activity : IActivity
     {
-        public IServiceProvider ServiceProvider { get; set; }
-
-        private ICurrentTenant _currentTenant;
-        public ICurrentTenant CurrentTenant => LazyGetRequiredService(ref _currentTenant);
-
-        private ICurrentUser _currentUser;
-        public ICurrentUser CurrentUser => LazyGetRequiredService(ref _currentUser);
-
-        private IClock _clock;
-        public IClock Clock => LazyGetRequiredService(ref _clock);
-
-        private IStringLocalizerFactory _stringLocalizerFactory;
-        public IStringLocalizerFactory StringLocalizerFactory => LazyGetRequiredService(ref _stringLocalizerFactory);
-
-        private IStringLocalizer _localizer;
-        public IStringLocalizer L => _localizer ?? (_localizer = StringLocalizerFactory.Create(LocalizationResource));
+        protected IServiceProvider ServiceProvider { get; }
 
         private ILoggerFactory _loggerFactory;
-        public ILoggerFactory LoggerFactory => LazyGetRequiredService(ref _loggerFactory);
+        protected ILoggerFactory LoggerFactory => LazyGetRequiredService(ref _loggerFactory);
 
         protected ILogger Logger => _lazyLogger.Value;
         private Lazy<ILogger> _lazyLogger => new Lazy<ILogger>(() => LoggerFactory?.CreateLogger(GetType().FullName) ?? NullLogger.Instance, true);
 
-        private Type _localizationResource = typeof(AwesomeNetWorkflowsResource);
-        protected Type LocalizationResource
-        {
-            get => _localizationResource;
-            set
-            {
-                _localizationResource = value;
-                _localizer = null;
-            }
-        }
-
         private IWorkflowExpressionEvaluator _expressionEvaluator;
-        public IWorkflowExpressionEvaluator ExpressionEvaluator => LazyGetRequiredService(ref _expressionEvaluator);
+        protected IWorkflowExpressionEvaluator ExpressionEvaluator => LazyGetRequiredService(ref _expressionEvaluator);
+
+        private IStringLocalizer _localizer;
+        protected IStringLocalizer T => LazyGetRequiredService(ref _localizer);
 
         public virtual string Name => GetType().Name;
         public abstract LocalizedString Category { get; }
-        public JObject Properties { get; set; } = new JObject();
+        public virtual JObject Properties { get; set; }
+
         public virtual bool HasEditor => true;
 
-        public abstract IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext);
+        protected Activity(IServiceProvider serviceProvider)
+        {
+            ServiceProvider = serviceProvider;
+        }
 
-        public virtual Task<bool> CanExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+        public abstract IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityExecutionContext activityContext);
+
+        public virtual Task<bool> CanExecuteAsync(WorkflowExecutionContext workflowContext, ActivityExecutionContext activityContext)
         {
             return Task.FromResult(CanExecute(workflowContext, activityContext));
         }
 
-        public virtual bool CanExecute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+        public virtual bool CanExecute(WorkflowExecutionContext workflowContext, ActivityExecutionContext activityContext)
         {
             return true;
         }
 
-        public virtual Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+        public virtual Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityExecutionContext activityContext)
         {
             return Task.FromResult(Execute(workflowContext, activityContext));
         }
 
-        public virtual ActivityExecutionResult Execute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+        public virtual ActivityExecutionResult Execute(WorkflowExecutionContext workflowContext, ActivityExecutionContext activityContext)
         {
             return Noop();
         }
 
-        public virtual Task<ActivityExecutionResult> ResumeAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+        public virtual Task<ActivityExecutionResult> ResumeAsync(WorkflowExecutionContext workflowContext, ActivityExecutionContext activityContext)
         {
             return Task.FromResult(Resume(workflowContext, activityContext));
         }
 
-        public virtual ActivityExecutionResult Resume(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+        public virtual ActivityExecutionResult Resume(WorkflowExecutionContext workflowContext, ActivityExecutionContext activityContext)
         {
             return Noop();
         }
@@ -119,12 +100,12 @@ namespace Awesome.Net.Workflows.Activities
             return Task.CompletedTask;
         }
 
-        public virtual Task OnActivityExecutingAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task OnActivityExecutingAsync(WorkflowExecutionContext workflowContext, ActivityExecutionContext activityContext, CancellationToken cancellationToken = default(CancellationToken))
         {
             return Task.CompletedTask;
         }
 
-        public virtual Task OnActivityExecutedAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+        public virtual Task OnActivityExecutedAsync(WorkflowExecutionContext workflowContext, ActivityExecutionContext activityContext)
         {
             return Task.CompletedTask;
         }
@@ -163,11 +144,28 @@ namespace Awesome.Net.Workflows.Activities
         {
             return ActivityExecutionResult.Noop();
         }
+        
+        protected virtual T GetProperty<T>(Func<T> defaultValue = null, [CallerMemberName]string name = null)
+        {
+            var item = Properties[name];
+            return item != null ? item.ToObject<T>() : defaultValue != null ? defaultValue() : default;
+        }
+
+        protected virtual T GetProperty<T>(Type type, Func<T> defaultValue = null, [CallerMemberName]string name = null)
+        {
+            var item = Properties[name];
+            return item != null ? (T)item.ToObject(type) : defaultValue != null ? defaultValue() : default;
+        }
+
+        protected virtual void SetProperty(object value, [CallerMemberName]string name = null)
+        {
+            Properties[name] = JToken.FromObject(value);
+        }
 
         protected readonly object ServiceProviderLock = new object();
+
         protected TService LazyGetRequiredService<TService>(ref TService reference)
         {
-            Check.NotNull(ServiceProvider, nameof(ServiceProvider));
             if(reference == null)
             {
                 lock(ServiceProviderLock)
@@ -180,6 +178,14 @@ namespace Awesome.Net.Workflows.Activities
             }
 
             return reference;
+        }
+    }
+
+    public static class ActivityExtensions
+    {
+        public static bool IsEvent(this IActivity activity)
+        {
+            return activity is IEvent;
         }
     }
 }

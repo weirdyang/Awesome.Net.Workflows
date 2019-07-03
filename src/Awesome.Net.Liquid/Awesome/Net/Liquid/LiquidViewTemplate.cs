@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using System.Globalization;
 using System.IO;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
@@ -44,18 +45,36 @@ namespace Awesome.Net.Liquid
     public static class LiquidViewTemplateExtensions
     {
         public static Task RenderAsync(this LiquidViewTemplate template, LiquidOptions options,
-            IServiceProvider services, TextWriter writer, TextEncoder encoder, TemplateContext context)
+            IServiceProvider services, TextWriter writer, TextEncoder encoder, TemplateContext templateContext)
         {
             foreach(var registration in options.FilterRegistrations)
             {
-                context.Filters.AddAsyncFilter(registration.Key, (input, arguments, ctx) =>
+                templateContext.Filters.AddAsyncFilter(registration.Key, (input, arguments, ctx) =>
                 {
                     var filter = services.GetRequiredService(registration.Value) as ILiquidFilter;
                     return filter.ProcessAsync(input, arguments, ctx);
                 });
             }
 
-            return template.RenderAsync(writer, encoder, context);
+            // Otherwise, we don't need the view engine for rendering.
+            return template.RenderAsync(writer, encoder, templateContext);
+        }
+    }
+
+    public static class TemplateContextExtensions
+    {
+        public static async Task ContextualizeAsync(this TemplateContext context, IServiceProvider services)
+        {
+            if(!context.AmbientValues.ContainsKey("Services"))
+            {
+                context.AmbientValues.Add("Services", services);
+            }
+            context.CultureInfo = CultureInfo.CurrentUICulture;
+
+            foreach(var handler in services.GetServices<ILiquidTemplateEventHandler>())
+            {
+                await handler.RenderingAsync(context);
+            }
         }
     }
 }

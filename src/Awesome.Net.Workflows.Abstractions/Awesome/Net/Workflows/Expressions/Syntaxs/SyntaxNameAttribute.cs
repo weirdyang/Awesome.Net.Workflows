@@ -1,7 +1,5 @@
-﻿using System;
+using System;
 using System.Linq;
-using JetBrains.Annotations;
-using Volo.Abp;
 
 namespace Awesome.Net.Workflows.Expressions.Syntaxs
 {
@@ -11,9 +9,12 @@ namespace Awesome.Net.Workflows.Expressions.Syntaxs
     {
         public string Name { get; }
 
-        public SyntaxNameAttribute([NotNull] string name)
+        public SyntaxNameAttribute(string name)
         {
-            Check.NotNull(name, nameof(name));
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentException("Value cannot be null or whitespace.", nameof(name));
+            }
 
             Name = name;
         }

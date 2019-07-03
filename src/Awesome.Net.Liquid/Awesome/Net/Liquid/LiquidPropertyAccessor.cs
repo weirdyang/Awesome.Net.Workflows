@@ -18,6 +18,7 @@ namespace Awesome.Net.Liquid
         {
             _getter = getter;
         }
+
         public Task<FluidValue> GetValueAsync(string identifier)
         {
             return _getter(identifier);

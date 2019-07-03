@@ -19,10 +19,13 @@ namespace Awesome.Net.Liquid.Ast
         public Statement Parse(ParseTreeNode node, ParserContext context)
         {
             var expression = DefaultFluidParser.BuildExpression(node.ChildNodes[0].ChildNodes[0]);
-            var arguments = node.ChildNodes[0].ChildNodes[1].ChildNodes.Select(DefaultFluidParser.BuildFilterArgument).ToArray();
-            return new DelegateStatement((writer, encoder, ctx) => WriteToAsync(writer, encoder, ctx, expression, arguments));
+            var arguments = node.ChildNodes[0].ChildNodes[1].ChildNodes.Select(DefaultFluidParser.BuildFilterArgument)
+                .ToArray();
+            return new DelegateStatement((writer, encoder, ctx) =>
+                WriteToAsync(writer, encoder, ctx, expression, arguments));
         }
 
-        public abstract ValueTask<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context, Expression term, FilterArgument[] arguments);
+        public abstract ValueTask<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder,
+            TemplateContext context, Expression term, FilterArgument[] arguments);
     }
 }

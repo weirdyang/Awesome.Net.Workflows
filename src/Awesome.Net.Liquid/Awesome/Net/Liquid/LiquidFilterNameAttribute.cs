@@ -1,7 +1,5 @@
-﻿using System;
+using System;
 using System.Linq;
-using JetBrains.Annotations;
-using Volo.Abp;
 
 namespace Awesome.Net.Liquid
 {
@@ -11,21 +9,24 @@ namespace Awesome.Net.Liquid
     {
         public string Name { get; }
 
-        public LiquidFilterNameAttribute([NotNull] string name)
+        public LiquidFilterNameAttribute(string name)
         {
-            Check.NotNull(name, nameof(name));
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentException("Value cannot be null or whitespace.", nameof(name));
+            }
 
             Name = name;
         }
 
-        public static string GetFilterName(Type filterType)
+        public static string GetName(Type filterType)
         {
             var filterNameAttribute = filterType
                 .GetCustomAttributes(true)
                 .OfType<LiquidFilterNameAttribute>()
                 .FirstOrDefault();
 
-            if(filterNameAttribute != null)
+            if (filterNameAttribute != null)
             {
                 return filterNameAttribute.Name;
             }

@@ -1,5 +1,6 @@
-using JetBrains.Annotations;
+using Awesome.Net.Workflows.Converters;
 using Microsoft.Extensions.Localization;
+using Newtonsoft.Json;
 
 namespace Awesome.Net.Workflows.Models
 {
@@ -16,10 +17,9 @@ namespace Awesome.Net.Workflows.Models
             DisplayName = displayName ?? new LocalizedString(name, name);
         }
 
-        [NotNull]
         public string Name { get; }
 
-        [NotNull]
+        [JsonConverter(typeof(LocalizedStringConverter))]
         public LocalizedString DisplayName { get; }
     }
 }

@@ -12,14 +12,13 @@ namespace Awesome.Net.Workflows.Scripting
         {
             _setOutcomeMethod = new GlobalMethod
             {
-                Name = "setOutcome",
-                Method = serviceProvider => (Action<string>)(name => outcomes.Add(name))
+                Name = "setOutcome", Method = serviceProvider => (Action<string>) (name => outcomes.Add(name))
             };
         }
 
         public IEnumerable<GlobalMethod> GetMethods()
         {
-            return new[] { _setOutcomeMethod };
+            return new[] {_setOutcomeMethod};
         }
     }
 }

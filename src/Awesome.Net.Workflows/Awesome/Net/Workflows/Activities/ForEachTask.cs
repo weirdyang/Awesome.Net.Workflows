@@ -1,26 +1,26 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Awesome.Net.Data;
+using Awesome.Net.Workflows.Contexts;
 using Awesome.Net.Workflows.Expressions;
 using Awesome.Net.Workflows.Expressions.Syntaxs;
 using Awesome.Net.Workflows.Models;
 using Microsoft.Extensions.Localization;
-using Volo.Abp.DependencyInjection;
 
 namespace Awesome.Net.Workflows.Activities
 {
-    public class ForEachTask : TaskActivity, ITransientDependency
+    public class ForEachTask : TaskActivity
     {
-        public override LocalizedString Category => L["ControlFlow"];
+        public override LocalizedString Category => T["Control Flow"];
 
         /// <summary>
         /// An workflowExpression evaluating to an enumerable object to iterate over.
         /// </summary>
         public IWorkflowExpression<IEnumerable<object>> Enumerable
         {
-            get => this.GetProperty(() => new JavaScriptExpression<IEnumerable<object>>());
-            set => this.SetProperty(value);
+            get => GetProperty(() => new JavaScriptExpression<IEnumerable<object>>());
+            set => SetProperty(value);
         }
 
         /// <summary>
@@ -28,8 +28,8 @@ namespace Awesome.Net.Workflows.Activities
         /// </summary>
         public string LoopVariableName
         {
-            get => this.GetProperty(() => "x");
-            set => this.SetProperty(value);
+            get => GetProperty(() => "x");
+            set => SetProperty(value);
         }
 
         /// <summary>
@@ -37,8 +37,8 @@ namespace Awesome.Net.Workflows.Activities
         /// </summary>
         public object Current
         {
-            get => this.GetProperty<object>();
-            set => this.SetProperty(value);
+            get => GetProperty<object>();
+            set => SetProperty(value);
         }
 
         /// <summary>
@@ -46,21 +46,23 @@ namespace Awesome.Net.Workflows.Activities
         /// </summary>
         public int Index
         {
-            get => this.GetProperty(() => 0);
-            set => this.SetProperty(value);
+            get => GetProperty(() => 0);
+            set => SetProperty(value);
         }
 
-        public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+        public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext,
+            ActivityExecutionContext activityContext)
         {
-            return Outcomes(L["Iterate"], L["Done"]);
+            return Outcomes(T["Iterate"], T["Done"]);
         }
 
-        public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+        public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext,
+            ActivityExecutionContext activityContext)
         {
             var items = (await ExpressionEvaluator.EvaluateAsync(Enumerable, workflowContext)).ToList();
             var count = items.Count;
 
-            if(Index < count)
+            if (Index < count)
             {
                 var current = Current = items[Index];
 
@@ -75,6 +77,10 @@ namespace Awesome.Net.Workflows.Activities
                 Index = 0;
                 return Outcomes("Done");
             }
+        }
+
+        public ForEachTask(IServiceProvider serviceProvider) : base(serviceProvider)
+        {
         }
     }
 }

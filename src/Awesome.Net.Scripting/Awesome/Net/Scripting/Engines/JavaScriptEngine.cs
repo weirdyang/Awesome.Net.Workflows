@@ -4,11 +4,10 @@ using Esprima;
 using Jint;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.FileProviders;
-using Volo.Abp.DependencyInjection;
 
 namespace Awesome.Net.Scripting.Engines
 {
-    public class JavaScriptEngine : IScriptingEngine, ISingletonDependency
+    public class JavaScriptEngine : IScriptingEngine
     {
         
         private readonly IMemoryCache _memoryCache;

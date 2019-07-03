@@ -17,8 +17,8 @@
 //            _notifier = notifier;
 //            _expressionEvaluator = expressionvaluator;
 //        }
-        
-//        public override LocalizedString Category => L["UI"];
+
+//        public override LocalizedString Category => T["UI"];
 
 //        public NotifyType NotificationType
 //        {
@@ -32,12 +32,12 @@
 //            set => this.SetProperty(value);
 //        }
 
-//        public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+//        public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityExecutionContext activityContext)
 //        {
-//            return Outcomes(L["Done"]);
+//            return Outcomes(T["Done"]);
 //        }
 
-//        public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+//        public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityExecutionContext activityContext)
 //        {
 //            var message = await _expressionEvaluator.EvaluateAsync(Message, workflowContext);
 //            _notifier.Add(NotificationType, new LocalizedHtmlString(nameof(NotifyTask), message));
@@ -46,3 +46,4 @@
 //        }
 //    }
 //}
+

@@ -1,12 +1,11 @@
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
-using Volo.Abp.DependencyInjection;
 
 namespace Awesome.Net.Liquid.Filters
 {
     [LiquidFilterName("slugify")]
-    public class SlugifyFilter : ILiquidFilter, IScopedDependency
+    public class SlugifyFilter : ILiquidFilter
     {
         private readonly ISlugService _slugService;
 

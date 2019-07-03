@@ -1,25 +1,25 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Awesome.Net.Data;
+using Awesome.Net.Workflows.Contexts;
 using Awesome.Net.Workflows.Expressions;
 using Awesome.Net.Workflows.Expressions.Syntaxs;
 using Awesome.Net.Workflows.Models;
 using Microsoft.Extensions.Localization;
-using Volo.Abp.DependencyInjection;
 
 namespace Awesome.Net.Workflows.Activities
 {
-    public class ForLoopTask : TaskActivity, ITransientDependency
+    public class ForLoopTask : TaskActivity
     {
-        public override LocalizedString Category => L["ControlFlow"];
+        public override LocalizedString Category => T["Control Flow"];
 
         /// <summary>
         /// An workflowExpression evaluating to the start value.
         /// </summary>
         public IWorkflowExpression<double> From
         {
-            get => this.GetProperty(() => new JavaScriptExpression<double>("0"));
-            set => this.SetProperty(value);
+            get => GetProperty(() => new JavaScriptExpression<double>("0"));
+            set => SetProperty(value);
         }
 
         /// <summary>
@@ -27,8 +27,8 @@ namespace Awesome.Net.Workflows.Activities
         /// </summary>
         public IWorkflowExpression<double> To
         {
-            get => this.GetProperty(() => new JavaScriptExpression<double>("10"));
-            set => this.SetProperty(value);
+            get => GetProperty(() => new JavaScriptExpression<double>("10"));
+            set => SetProperty(value);
         }
 
         /// <summary>
@@ -36,8 +36,8 @@ namespace Awesome.Net.Workflows.Activities
         /// </summary>
         public IWorkflowExpression<double> Step
         {
-            get => this.GetProperty(() => new JavaScriptExpression<double>("1"));
-            set => this.SetProperty(value);
+            get => GetProperty(() => new JavaScriptExpression<double>("1"));
+            set => SetProperty(value);
         }
 
         /// <summary>
@@ -45,8 +45,8 @@ namespace Awesome.Net.Workflows.Activities
         /// </summary>
         public string LoopVariableName
         {
-            get => this.GetProperty(() => "x");
-            set => this.SetProperty(value);
+            get => GetProperty(() => "x");
+            set => SetProperty(value);
         }
 
         /// <summary>
@@ -54,38 +54,40 @@ namespace Awesome.Net.Workflows.Activities
         /// </summary>
         public double Index
         {
-            get => this.GetProperty(() => 0);
-            set => this.SetProperty(value);
+            get => GetProperty(() => 0);
+            set => SetProperty(value);
         }
 
-        public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+        public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext,
+            ActivityExecutionContext activityContext)
         {
-            return Outcomes(L["Iterate"], L["Done"]);
+            return Outcomes(T["Iterate"], T["Done"]);
         }
 
-        public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+        public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext,
+            ActivityExecutionContext activityContext)
         {
-            if(!double.TryParse(From.Expression, out var from))
+            if (!Double.TryParse(From.Expression, out var from))
             {
                 from = await ExpressionEvaluator.EvaluateAsync(From, workflowContext);
             }
 
-            if(!double.TryParse(To.Expression, out var to))
+            if (!Double.TryParse(To.Expression, out var to))
             {
                 to = await ExpressionEvaluator.EvaluateAsync(To, workflowContext);
             }
 
-            if(!double.TryParse(Step.Expression, out var step))
+            if (!Double.TryParse(Step.Expression, out var step))
             {
                 step = await ExpressionEvaluator.EvaluateAsync(Step, workflowContext);
             }
 
-            if(Index < from)
+            if (Index < from)
             {
                 Index = from;
             }
 
-            if(Index < to)
+            if (Index < to)
             {
                 workflowContext.LastResult = Index;
                 workflowContext.Properties[LoopVariableName] = Index;
@@ -97,6 +99,10 @@ namespace Awesome.Net.Workflows.Activities
                 Index = from;
                 return Outcomes("Done");
             }
+        }
+
+        public ForLoopTask(IServiceProvider serviceProvider) : base(serviceProvider)
+        {
         }
     }
 }

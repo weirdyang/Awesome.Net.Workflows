@@ -1,38 +1,40 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Awesome.Net.Data;
+using Awesome.Net.Workflows.Contexts;
 using Awesome.Net.Workflows.Models;
 using Microsoft.Extensions.Localization;
+using Newtonsoft.Json.Linq;
 
 namespace Awesome.Net.Workflows.Activities
 {
-    public interface IActivity : IHasJObjectProperties
+    public interface IActivity
     {
         string Name { get; }
         LocalizedString Category { get; }
+        JObject Properties { get; set; }
         bool HasEditor { get; }
 
         /// <summary>
         /// List of possible outcomes when the activity is executed.
         /// </summary>
-        IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext);
+        IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityExecutionContext activityContext);
 
         /// <summary>
         /// Whether the activity can transition to the next outcome. Can prevent the activity from being transitioned
         /// because a condition is not valid.
         /// </summary>
-        Task<bool> CanExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext);
+        Task<bool> CanExecuteAsync(WorkflowExecutionContext workflowContext, ActivityExecutionContext activityContext);
 
         /// <summary>
         /// Executes the specified activity.
         /// </summary>
-        Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext);
+        Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityExecutionContext activityContext);
 
         /// <summary>
         /// Resumes the specified activity.
         /// </summary>
-        Task<ActivityExecutionResult> ResumeAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext);
+        Task<ActivityExecutionResult> ResumeAsync(WorkflowExecutionContext workflowContext, ActivityExecutionContext activityContext);
 
         /// <summary>
         /// Executes before a workflow starts or resumes, giving activities an opportunity to read and store any values of interest.
@@ -62,11 +64,11 @@ namespace Awesome.Net.Workflows.Activities
         /// <summary>
         /// Called on each activity when an activity is about to be executed.
         /// </summary>
-        Task OnActivityExecutingAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext, CancellationToken cancellationToken = default(CancellationToken));
+        Task OnActivityExecutingAsync(WorkflowExecutionContext workflowContext, ActivityExecutionContext activityContext, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// Called on each activity when an activity has been executed.
         /// </summary>
-        Task OnActivityExecutedAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext);
+        Task OnActivityExecutedAsync(WorkflowExecutionContext workflowContext, ActivityExecutionContext activityContext);
     }
 }

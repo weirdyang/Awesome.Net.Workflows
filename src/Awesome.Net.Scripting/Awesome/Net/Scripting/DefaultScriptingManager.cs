@@ -1,24 +1,23 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
-using Volo.Abp;
-using Volo.Abp.DependencyInjection;
 
 namespace Awesome.Net.Scripting
 {
-    public class DefaultScriptingManager : IScriptingManager, ISingletonDependency
+    public class DefaultScriptingManager : IScriptingManager
     {
         private readonly IEnumerable<IScriptingEngine> _engines;
-        protected IHybridServiceScopeFactory ServiceScopeFactory { get; }
+        private readonly IServiceProvider _serviceProvider;
 
         public DefaultScriptingManager(
             IEnumerable<IScriptingEngine> engines,
             IEnumerable<IGlobalMethodProvider> globalMethodProviders,
-            IHybridServiceScopeFactory serviceScopeFactory)
+            IServiceProvider serviceProvider)
         {
             _engines = engines;
-            ServiceScopeFactory = serviceScopeFactory;
+            _serviceProvider = serviceProvider;
             GlobalMethodProviders = new List<IGlobalMethodProvider>(globalMethodProviders);
         }
 
@@ -29,7 +28,7 @@ namespace Awesome.Net.Scripting
             string basePath,
             IEnumerable<IGlobalMethodProvider> scopedMethodProviders)
         {
-            Check.NotNullOrWhiteSpace(directive, nameof(directive));
+            if(directive == null) throw new ArgumentNullException(nameof(directive));
 
             var directiveIndex = directive.IndexOf(":", StringComparison.Ordinal);
 
@@ -49,9 +48,10 @@ namespace Awesome.Net.Scripting
 
             var methodProviders = scopedMethodProviders != null ? GlobalMethodProviders.Concat(scopedMethodProviders) : GlobalMethodProviders;
 
-            using(var scope = ServiceScopeFactory.CreateScope())
+            using(var scope = _serviceProvider.CreateScope())
             {
                 var scriptingScope = engine.CreateScope(methodProviders.SelectMany(x => x.GetMethods()), scope.ServiceProvider, fileProvider, basePath);
+
                 return engine.Evaluate(scriptingScope, script);
             }
         }

@@ -18,7 +18,7 @@ namespace Awesome.Net.Liquid.Ast
         {
             var arguments = new FilterArguments();
 
-            foreach(var argument in _arguments)
+            foreach (var argument in _arguments)
             {
                 arguments.Add(argument.Name, await argument.Expression.EvaluateAsync(context));
             }

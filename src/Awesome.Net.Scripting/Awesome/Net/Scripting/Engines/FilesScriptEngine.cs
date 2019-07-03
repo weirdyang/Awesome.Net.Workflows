@@ -2,14 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Microsoft.Extensions.FileProviders;
-using Volo.Abp.DependencyInjection;
 
 namespace Awesome.Net.Scripting.Engines
 {
     /// <summary>
     /// Provides 
     /// </summary>
-    public class FilesScriptEngine : IScriptingEngine, ISingletonDependency
+    public class FilesScriptEngine : IScriptingEngine
     {
         public string Prefix => "file";
 

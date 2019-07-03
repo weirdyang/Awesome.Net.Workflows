@@ -13,15 +13,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{97B9B8D3-67B
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{BED03E1F-C89B-4DB5-8F4F-83EBE5991EBB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Awesome.Net.Workflows.Abstractions", "src\Awesome.Net.Workflows.Abstractions\Awesome.Net.Workflows.Abstractions.csproj", "{5D00F275-A539-4A3C-AE0E-59320B3C7365}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Awesome.Net.Workflows.Abstractions", "src\Awesome.Net.Workflows.Abstractions\Awesome.Net.Workflows.Abstractions.csproj", "{5D00F275-A539-4A3C-AE0E-59320B3C7365}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Awesome.Net.Workflows", "src\Awesome.Net.Workflows\Awesome.Net.Workflows.csproj", "{61F07D87-8B11-4DDA-9492-C47D77E4958D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Awesome.Net.Workflows", "src\Awesome.Net.Workflows\Awesome.Net.Workflows.csproj", "{61F07D87-8B11-4DDA-9492-C47D77E4958D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Awesome.Net.Liquid", "src\Awesome.Net.Liquid\Awesome.Net.Liquid.csproj", "{78D0A9AE-2259-4407-BD3E-7E074430B3BB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Awesome.Net.Liquid", "src\Awesome.Net.Liquid\Awesome.Net.Liquid.csproj", "{78D0A9AE-2259-4407-BD3E-7E074430B3BB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Awesome.Net.Scripting", "src\Awesome.Net.Scripting\Awesome.Net.Scripting.csproj", "{4934AF3F-C6C5-4C1E-ABF3-32AE7767C923}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Awesome.Net.Scripting", "src\Awesome.Net.Scripting\Awesome.Net.Scripting.csproj", "{4934AF3F-C6C5-4C1E-ABF3-32AE7767C923}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Awesome.Net.AbpExtensions", "src\Awesome.Net.AbpExtensions\Awesome.Net.AbpExtensions.csproj", "{5E02F18F-44A7-4745-B208-F32692BE3001}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Awesome.Net.Extensions", "src\Awesome.Net.Extensions\Awesome.Net.Extensions.csproj", "{BB9E5A38-D1BD-468D-93DD-6180216DA29A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,10 +45,10 @@ Global
 		{4934AF3F-C6C5-4C1E-ABF3-32AE7767C923}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4934AF3F-C6C5-4C1E-ABF3-32AE7767C923}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4934AF3F-C6C5-4C1E-ABF3-32AE7767C923}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5E02F18F-44A7-4745-B208-F32692BE3001}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5E02F18F-44A7-4745-B208-F32692BE3001}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5E02F18F-44A7-4745-B208-F32692BE3001}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5E02F18F-44A7-4745-B208-F32692BE3001}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BB9E5A38-D1BD-468D-93DD-6180216DA29A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BB9E5A38-D1BD-468D-93DD-6180216DA29A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BB9E5A38-D1BD-468D-93DD-6180216DA29A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BB9E5A38-D1BD-468D-93DD-6180216DA29A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -58,7 +58,7 @@ Global
 		{61F07D87-8B11-4DDA-9492-C47D77E4958D} = {97B9B8D3-67BF-44E0-9576-B4314A8ACC10}
 		{78D0A9AE-2259-4407-BD3E-7E074430B3BB} = {97B9B8D3-67BF-44E0-9576-B4314A8ACC10}
 		{4934AF3F-C6C5-4C1E-ABF3-32AE7767C923} = {97B9B8D3-67BF-44E0-9576-B4314A8ACC10}
-		{5E02F18F-44A7-4745-B208-F32692BE3001} = {97B9B8D3-67BF-44E0-9576-B4314A8ACC10}
+		{BB9E5A38-D1BD-468D-93DD-6180216DA29A} = {97B9B8D3-67BF-44E0-9576-B4314A8ACC10}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D78A8F1E-DF78-411A-9152-EFECE121CDBC}

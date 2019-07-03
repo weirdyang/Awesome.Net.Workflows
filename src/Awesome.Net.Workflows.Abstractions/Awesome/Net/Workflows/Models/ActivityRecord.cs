@@ -1,9 +1,8 @@
-using Awesome.Net.Data;
 using Newtonsoft.Json.Linq;
 
 namespace Awesome.Net.Workflows.Models
 {
-    public class ActivityRecord : IHasJObjectProperties
+    public class ActivityRecord
     {
         public string ActivityId { get; set; }
 

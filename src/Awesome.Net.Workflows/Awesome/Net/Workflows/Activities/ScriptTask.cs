@@ -1,24 +1,25 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Awesome.Net.Data;
+using Awesome.Net.Scripting;
+using Awesome.Net.Workflows.Contexts;
 using Awesome.Net.Workflows.Expressions;
 using Awesome.Net.Workflows.Expressions.Syntaxs;
 using Awesome.Net.Workflows.Models;
 using Awesome.Net.Workflows.Scripting;
 using Microsoft.Extensions.Localization;
-using Volo.Abp.DependencyInjection;
 
 namespace Awesome.Net.Workflows.Activities
 {
-    public class ScriptTask : TaskActivity, ITransientDependency
+    public class ScriptTask : TaskActivity
     {
-        public override LocalizedString Category => L["ControlFlow"];
+        public override LocalizedString Category => T["Control Flow"];
 
         public IList<string> AvailableOutcomes
         {
-            get => this.GetProperty(() => new List<string> { "Done" });
-            set => this.SetProperty(value);
+            get => GetProperty(() => new List<string> {"Done"});
+            set => SetProperty(value);
         }
 
         /// <summary>
@@ -26,20 +27,29 @@ namespace Awesome.Net.Workflows.Activities
         /// </summary>
         public IWorkflowExpression<object> Script
         {
-            get => this.GetProperty(() => new JavaScriptExpression<object>("setOutcome('Done');"));
-            set => this.SetProperty(value);
+            get => GetProperty(() => new JavaScriptExpression<object>("setOutcome('Done');"));
+            set => SetProperty(value);
         }
 
-        public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+        public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext,
+            ActivityExecutionContext activityContext)
         {
-            return Outcomes(AvailableOutcomes.Select(x => L[x]).ToArray());
+            return Outcomes(AvailableOutcomes.Select(x => T[x]).ToArray());
         }
 
-        public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+        public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext,
+            ActivityExecutionContext activityContext)
         {
             var outcomes = new List<string>();
-            await ExpressionEvaluator.EvaluateAsync(Script, workflowContext, default, new OutcomeMethodProvider(outcomes));
+
+            var scopedMethodProviders = new List<IGlobalMethodProvider> {new OutcomeMethodProvider(outcomes)};
+
+            await ExpressionEvaluator.EvaluateAsync(Script, workflowContext, scopedMethodProviders.AsDictionary());
             return Outcomes(outcomes);
+        }
+
+        public ScriptTask(IServiceProvider serviceProvider) : base(serviceProvider)
+        {
         }
     }
 }

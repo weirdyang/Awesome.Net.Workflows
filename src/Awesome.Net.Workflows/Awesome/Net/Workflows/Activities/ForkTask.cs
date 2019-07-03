@@ -1,30 +1,36 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Awesome.Net.Data;
+using Awesome.Net.Workflows.Contexts;
 using Awesome.Net.Workflows.Models;
 using Microsoft.Extensions.Localization;
-using Volo.Abp.DependencyInjection;
 
 namespace Awesome.Net.Workflows.Activities
 {
-    public class ForkTask : TaskActivity, ITransientDependency
+    public class ForkTask : TaskActivity
     {
-        public override LocalizedString Category => L["ControlFlow"];
+        public override LocalizedString Category => T["Control Flow"];
 
         public IList<string> Forks
         {
-            get => this.GetProperty(() => new List<string>());
-            set => this.SetProperty(value);
+            get => GetProperty(() => new List<string>());
+            set => SetProperty(value);
         }
 
-        public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+        public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext,
+            ActivityExecutionContext activityContext)
         {
-            return Forks.Select(x => Outcome(L[x]));
+            return Forks.Select(x => Outcome(T[x]));
         }
 
-        public override ActivityExecutionResult Execute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+        public override ActivityExecutionResult Execute(WorkflowExecutionContext workflowContext,
+            ActivityExecutionContext activityContext)
         {
             return Outcomes(Forks);
+        }
+
+        public ForkTask(IServiceProvider serviceProvider) : base(serviceProvider)
+        {
         }
     }
 }

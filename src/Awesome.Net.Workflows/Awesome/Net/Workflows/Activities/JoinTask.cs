@@ -1,14 +1,14 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Awesome.Net.Data;
+using Awesome.Net.Workflows.Contexts;
 using Awesome.Net.Workflows.Models;
 using Microsoft.Extensions.Localization;
-using Volo.Abp.DependencyInjection;
 
 namespace Awesome.Net.Workflows.Activities
 {
-    public class JoinTask : TaskActivity, ITransientDependency
+    public class JoinTask : TaskActivity
     {
         public enum JoinMode
         {
@@ -16,26 +16,28 @@ namespace Awesome.Net.Workflows.Activities
             WaitAny
         }
 
-        public override LocalizedString Category => L["ControlFlow"];
+        public override LocalizedString Category => T["Control Flow"];
 
         public JoinMode Mode
         {
-            get => this.GetProperty(() => JoinMode.WaitAll);
-            set => this.SetProperty(value);
+            get => GetProperty(() => JoinMode.WaitAll);
+            set => SetProperty(value);
         }
 
         private IList<string> Branches
         {
-            get => this.GetProperty(() => new List<string>());
-            set => this.SetProperty(value);
+            get => GetProperty(() => new List<string>());
+            set => SetProperty(value);
         }
 
-        public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+        public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext,
+            ActivityExecutionContext activityContext)
         {
-            return Outcomes(L["Joined"]);
+            return Outcomes(T["Joined"]);
         }
 
-        public override ActivityExecutionResult Execute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+        public override ActivityExecutionResult Execute(WorkflowExecutionContext workflowContext,
+            ActivityExecutionContext activityContext)
         {
             var branches = Branches;
             var inboundTransitions = workflowContext.GetInboundTransitions(activityContext.ActivityRecord.ActivityId);
@@ -52,14 +54,17 @@ namespace Awesome.Net.Workflows.Activities
                     if (done)
                     {
                         // Remove any inbound blocking activities.
-                        var ancestorActivityIds = workflowContext.GetInboundActivityPath(activityContext.ActivityRecord.ActivityId).ToList();
-                        var blockingActivities = workflowContext.Workflow.BlockingActivities.Where(x => ancestorActivityIds.Contains(x.ActivityId)).ToList();
+                        var ancestorActivityIds = workflowContext
+                            .GetInboundActivityPath(activityContext.ActivityRecord.ActivityId).ToList();
+                        var blockingActivities = workflowContext.Workflow.BlockingActivities
+                            .Where(x => ancestorActivityIds.Contains(x.ActivityId)).ToList();
 
                         foreach (var blockingActivity in blockingActivities)
                         {
                             workflowContext.Workflow.BlockingActivities.Remove(blockingActivity);
                         }
                     }
+
                     break;
             }
 
@@ -70,7 +75,9 @@ namespace Awesome.Net.Workflows.Activities
 
             return Noop();
         }
-        public override Task OnActivityExecutedAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+
+        public override Task OnActivityExecutedAsync(WorkflowExecutionContext workflowContext,
+            ActivityExecutionContext activityContext)
         {
             // Get outbound transitions of the executing activity.
             var outboundTransitions = workflowContext.GetOutboundTransitions(activityContext.ActivityRecord.ActivityId);
@@ -86,9 +93,11 @@ namespace Awesome.Net.Workflows.Activities
 
             foreach (var inboundTransition in inboundTransitions)
             {
-                var mergeActivity = (JoinTask)workflowContext.GetActivity(inboundTransition.DestinationActivityId).Activity;
+                var mergeActivity =
+                    (JoinTask) workflowContext.GetActivity(inboundTransition.DestinationActivityId).Activity;
                 var branches = mergeActivity.Branches;
-                mergeActivity.Branches = branches.Union(new[] { GetTransitionKey(inboundTransition) }).Distinct().ToList();
+                mergeActivity.Branches =
+                    branches.Union(new[] {GetTransitionKey(inboundTransition)}).Distinct().ToList();
             }
 
             return Task.CompletedTask;
@@ -100,6 +109,10 @@ namespace Awesome.Net.Workflows.Activities
             var sourceOutcomeName = transition.SourceOutcomeName;
 
             return $"@{sourceActivityId}_{sourceOutcomeName}";
+        }
+
+        public JoinTask(IServiceProvider serviceProvider) : base(serviceProvider)
+        {
         }
     }
 }

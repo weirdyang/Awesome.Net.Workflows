@@ -14,12 +14,14 @@ namespace Awesome.Net.Liquid
 
     public static class LiquidTemplateManagerExtensions
     {
-        public static Task<string> RenderAsync(this ILiquidTemplateManager manager, string template, TemplateContext context)
+        public static Task<string> RenderAsync(this ILiquidTemplateManager manager, string template,
+            TemplateContext context)
         {
             return manager.RenderAsync(template, HtmlEncoder.Default, context);
         }
 
-        public static async Task<string> RenderAsync(this ILiquidTemplateManager manager, string template, TextEncoder encoder, TemplateContext context)
+        public static async Task<string> RenderAsync(this ILiquidTemplateManager manager, string template,
+            TextEncoder encoder, TemplateContext context)
         {
             using (var sw = new StringWriter())
             {

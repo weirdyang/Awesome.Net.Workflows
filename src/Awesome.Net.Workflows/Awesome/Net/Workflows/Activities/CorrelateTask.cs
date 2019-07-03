@@ -1,35 +1,41 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Awesome.Net.Data;
+using Awesome.Net.Workflows.Contexts;
 using Awesome.Net.Workflows.Expressions;
 using Awesome.Net.Workflows.Expressions.Syntaxs;
 using Awesome.Net.Workflows.Models;
 using Microsoft.Extensions.Localization;
-using Volo.Abp.DependencyInjection;
 
 namespace Awesome.Net.Workflows.Activities
 {
-    public class CorrelateTask : TaskActivity, ITransientDependency
+    public class CorrelateTask : TaskActivity
     {
-        public override LocalizedString Category => L["Primitives"];
+        public override LocalizedString Category => T["Primitives"];
 
         public IWorkflowExpression<string> Value
         {
-            get => this.GetProperty(() => new JavaScriptExpression<string>());
-            set => this.SetProperty(value);
+            get => GetProperty(() => new JavaScriptExpression<string>());
+            set => SetProperty(value);
         }
 
-        public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+        public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext,
+            ActivityExecutionContext activityContext)
         {
-            return Outcomes(L["Done"]);
+            return Outcomes(T["Done"]);
         }
 
-        public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+        public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext,
+            ActivityExecutionContext activityContext)
         {
             var value = (await ExpressionEvaluator.EvaluateAsync(Value, workflowContext))?.Trim();
             workflowContext.CorrelationId = value;
 
             return Outcomes("Done");
+        }
+
+        public CorrelateTask(IServiceProvider serviceProvider) : base(serviceProvider)
+        {
         }
     }
 }
