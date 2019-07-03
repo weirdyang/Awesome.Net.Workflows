@@ -6,6 +6,7 @@
 
         string Expression { get; }
     }
+
     public interface IWorkflowExpression<T> : IWorkflowExpression
     {
     }

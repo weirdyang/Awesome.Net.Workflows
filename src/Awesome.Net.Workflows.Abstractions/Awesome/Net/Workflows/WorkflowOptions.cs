@@ -16,7 +16,7 @@ namespace Awesome.Net.Workflows
 
         public WorkflowOptions RegisterActivity(Type activityType)
         {
-            if(!ActivityDictionary.ContainsKey(activityType))
+            if (!ActivityDictionary.ContainsKey(activityType))
             {
                 ActivityDictionary.Add(activityType, activityType);
             }
@@ -26,7 +26,7 @@ namespace Awesome.Net.Workflows
 
         public WorkflowOptions UnregisterActivityType(Type activityType)
         {
-            if(!ActivityDictionary.ContainsKey(activityType))
+            if (!ActivityDictionary.ContainsKey(activityType))
                 throw new InvalidOperationException("The specified activity type is not registered.");
 
             ActivityDictionary.Remove(activityType);

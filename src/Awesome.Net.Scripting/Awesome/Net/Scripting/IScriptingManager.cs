@@ -24,12 +24,13 @@ namespace Awesome.Net.Scripting
         /// <param name="basePath"></param>
         /// <param name="scopedMethodProviders">A list of method providers scoped to the script evaluation.</param>
         /// <returns>The result of the script if any.</returns>
-        object Evaluate(string directive, IFileProvider fileProvider, string basePath, IEnumerable<IGlobalMethodProvider> scopedMethodProviders);
+        object Evaluate(string directive, IFileProvider fileProvider, string basePath,
+            IEnumerable<IScriptMethodProvider> scopedMethodProviders);
 
         /// <summary>
         /// The list of available method providers for this <see cref="IScriptingManager"/>
         /// instance.
         /// </summary>
-        IList<IGlobalMethodProvider> GlobalMethodProviders { get; }
+        IList<IScriptMethodProvider> GlobalMethodProviders { get; }
     }
 }

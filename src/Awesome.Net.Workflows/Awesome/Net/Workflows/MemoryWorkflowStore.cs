@@ -39,12 +39,12 @@ namespace Awesome.Net.Workflows
 
             query = query.OrderByDescending(x => x.CreatedUtc);
 
-            if(skip != null)
+            if (skip != null)
             {
                 query = query.Skip(skip.Value);
             }
 
-            if(take != null)
+            if (take != null)
             {
                 query = query.Take(take.Value);
             }
@@ -83,7 +83,7 @@ namespace Awesome.Net.Workflows
 
         public Task SaveAsync(Workflow workflow)
         {
-            if(Query.ContainsKey(workflow.Id))
+            if (Query.ContainsKey(workflow.Id))
             {
                 return UpdateAsync(workflow);
             }

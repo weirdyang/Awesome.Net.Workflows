@@ -46,7 +46,7 @@ namespace Awesome.Net.Workflows.Expressions
 
             var methodProviders = expressionContext.ScopedMethodProviders;
 
-            var scopedMethodProviders = arguments.As<List<IGlobalMethodProvider>>();
+            var scopedMethodProviders = arguments.As<List<IScriptMethodProvider>>();
             if (scopedMethodProviders != null)
             {
                 methodProviders = methodProviders.Concat(scopedMethodProviders).ToList();

@@ -68,7 +68,7 @@ namespace Awesome.Net.IO
             using (var stream = File.Open(path, FileMode.Open))
             {
                 var result = new byte[stream.Length];
-                await stream.ReadAsync(result, 0, (int)stream.Length);
+                await stream.ReadAsync(result, 0, (int) stream.Length);
                 return result;
             }
         }

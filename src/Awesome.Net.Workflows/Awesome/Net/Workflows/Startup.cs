@@ -23,10 +23,10 @@ namespace Awesome.Net.Workflows
             services.AddWorkflowExecutionContextHandler<DefaultWorkflowExecutionContextHandler>();
 
             services.AddScoped<IWorkflowExpressionEvaluator, WorkflowExpressionEvaluator>();
-            services.AddExpressionEvaluator<JavaScriptExpressionEvaluator>();
-            services.AddExpressionEvaluator<LiquidExpressionEvaluator>();
+            services.AddScoped<IExpressionEvaluator, JavaScriptExpressionEvaluator>();
+            services.AddScoped<IExpressionEvaluator, LiquidExpressionEvaluator>();
 
-            services.AddDefaultActivities();
+            services.AddDefaultWorkflowActivities();
 
             return services;
         }
@@ -38,27 +38,20 @@ namespace Awesome.Net.Workflows
             return services;
         }
 
-        public static IServiceCollection AddExpressionEvaluator<T>(this IServiceCollection services)
-            where T : class, IExpressionEvaluator
+        private static void AddDefaultWorkflowActivities(this IServiceCollection services)
         {
-            services.AddScoped<IExpressionEvaluator, T>();
-            return services;
-        }
+            services.AddWorkflowActivity<CorrelateTask>()
+                .AddWorkflowActivity<LogTask>()
+                .AddWorkflowActivity<SetOutputTask>()
+                .AddWorkflowActivity<SetPropertyTask>()
+                .AddWorkflowActivity<MissingActivity>();
 
-        private static void AddDefaultActivities(this IServiceCollection services)
-        {
-            services.AddActivity<CorrelateTask>()
-                .AddActivity<LogTask>()
-                .AddActivity<SetOutputTask>()
-                .AddActivity<SetPropertyTask>()
-                .AddActivity<MissingActivity>();
-
-            services.AddActivity<IfElseTask>()
-                .AddActivity<ForEachTask>()
-                .AddActivity<ForkTask>()
-                .AddActivity<JoinTask>()
-                .AddActivity<ScriptTask>()
-                .AddActivity<WhileLoopTask>();
+            services.AddWorkflowActivity<IfElseTask>()
+                .AddWorkflowActivity<ForEachTask>()
+                .AddWorkflowActivity<ForkTask>()
+                .AddWorkflowActivity<JoinTask>()
+                .AddWorkflowActivity<ScriptTask>()
+                .AddWorkflowActivity<WhileLoopTask>();
         }
     }
 }

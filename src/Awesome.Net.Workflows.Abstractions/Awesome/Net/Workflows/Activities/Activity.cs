@@ -24,7 +24,9 @@ namespace Awesome.Net.Workflows.Activities
         protected ILoggerFactory LoggerFactory => LazyGetRequiredService(ref _loggerFactory);
 
         protected ILogger Logger => _lazyLogger.Value;
-        private Lazy<ILogger> _lazyLogger => new Lazy<ILogger>(() => LoggerFactory?.CreateLogger(GetType().FullName) ?? NullLogger.Instance, true);
+
+        private Lazy<ILogger> _lazyLogger =>
+            new Lazy<ILogger>(() => LoggerFactory?.CreateLogger(GetType().FullName) ?? NullLogger.Instance, true);
 
         private IWorkflowExpressionEvaluator _expressionEvaluator;
         protected IWorkflowExpressionEvaluator ExpressionEvaluator => LazyGetRequiredService(ref _expressionEvaluator);
@@ -43,44 +45,53 @@ namespace Awesome.Net.Workflows.Activities
             ServiceProvider = serviceProvider;
         }
 
-        public abstract IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityExecutionContext activityContext);
+        public abstract IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext,
+            ActivityExecutionContext activityContext);
 
-        public virtual Task<bool> CanExecuteAsync(WorkflowExecutionContext workflowContext, ActivityExecutionContext activityContext)
+        public virtual Task<bool> CanExecuteAsync(WorkflowExecutionContext workflowContext,
+            ActivityExecutionContext activityContext)
         {
             return Task.FromResult(CanExecute(workflowContext, activityContext));
         }
 
-        public virtual bool CanExecute(WorkflowExecutionContext workflowContext, ActivityExecutionContext activityContext)
+        public virtual bool CanExecute(WorkflowExecutionContext workflowContext,
+            ActivityExecutionContext activityContext)
         {
             return true;
         }
 
-        public virtual Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityExecutionContext activityContext)
+        public virtual Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext,
+            ActivityExecutionContext activityContext)
         {
             return Task.FromResult(Execute(workflowContext, activityContext));
         }
 
-        public virtual ActivityExecutionResult Execute(WorkflowExecutionContext workflowContext, ActivityExecutionContext activityContext)
+        public virtual ActivityExecutionResult Execute(WorkflowExecutionContext workflowContext,
+            ActivityExecutionContext activityContext)
         {
             return Noop();
         }
 
-        public virtual Task<ActivityExecutionResult> ResumeAsync(WorkflowExecutionContext workflowContext, ActivityExecutionContext activityContext)
+        public virtual Task<ActivityExecutionResult> ResumeAsync(WorkflowExecutionContext workflowContext,
+            ActivityExecutionContext activityContext)
         {
             return Task.FromResult(Resume(workflowContext, activityContext));
         }
 
-        public virtual ActivityExecutionResult Resume(WorkflowExecutionContext workflowContext, ActivityExecutionContext activityContext)
+        public virtual ActivityExecutionResult Resume(WorkflowExecutionContext workflowContext,
+            ActivityExecutionContext activityContext)
         {
             return Noop();
         }
 
-        public virtual Task OnInputReceivedAsync(WorkflowExecutionContext workflowContext, IDictionary<string, object> input)
+        public virtual Task OnInputReceivedAsync(WorkflowExecutionContext workflowContext,
+            IDictionary<string, object> input)
         {
             return Task.CompletedTask;
         }
 
-        public virtual Task OnWorkflowStartingAsync(WorkflowExecutionContext context, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task OnWorkflowStartingAsync(WorkflowExecutionContext context,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
             return Task.CompletedTask;
         }
@@ -90,7 +101,8 @@ namespace Awesome.Net.Workflows.Activities
             return Task.CompletedTask;
         }
 
-        public virtual Task OnWorkflowResumingAsync(WorkflowExecutionContext context, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task OnWorkflowResumingAsync(WorkflowExecutionContext context,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
             return Task.CompletedTask;
         }
@@ -100,12 +112,14 @@ namespace Awesome.Net.Workflows.Activities
             return Task.CompletedTask;
         }
 
-        public virtual Task OnActivityExecutingAsync(WorkflowExecutionContext workflowContext, ActivityExecutionContext activityContext, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task OnActivityExecutingAsync(WorkflowExecutionContext workflowContext,
+            ActivityExecutionContext activityContext, CancellationToken cancellationToken = default(CancellationToken))
         {
             return Task.CompletedTask;
         }
 
-        public virtual Task OnActivityExecutedAsync(WorkflowExecutionContext workflowContext, ActivityExecutionContext activityContext)
+        public virtual Task OnActivityExecutedAsync(WorkflowExecutionContext workflowContext,
+            ActivityExecutionContext activityContext)
         {
             return Task.CompletedTask;
         }
@@ -144,20 +158,21 @@ namespace Awesome.Net.Workflows.Activities
         {
             return ActivityExecutionResult.Noop();
         }
-        
-        protected virtual T GetProperty<T>(Func<T> defaultValue = null, [CallerMemberName]string name = null)
+
+        protected virtual T GetProperty<T>(Func<T> defaultValue = null, [CallerMemberName] string name = null)
         {
             var item = Properties[name];
             return item != null ? item.ToObject<T>() : defaultValue != null ? defaultValue() : default;
         }
 
-        protected virtual T GetProperty<T>(Type type, Func<T> defaultValue = null, [CallerMemberName]string name = null)
+        protected virtual T GetProperty<T>(Type type, Func<T> defaultValue = null,
+            [CallerMemberName] string name = null)
         {
             var item = Properties[name];
-            return item != null ? (T)item.ToObject(type) : defaultValue != null ? defaultValue() : default;
+            return item != null ? (T) item.ToObject(type) : defaultValue != null ? defaultValue() : default;
         }
 
-        protected virtual void SetProperty(object value, [CallerMemberName]string name = null)
+        protected virtual void SetProperty(object value, [CallerMemberName] string name = null)
         {
             Properties[name] = JToken.FromObject(value);
         }
@@ -166,11 +181,11 @@ namespace Awesome.Net.Workflows.Activities
 
         protected TService LazyGetRequiredService<TService>(ref TService reference)
         {
-            if(reference == null)
+            if (reference == null)
             {
-                lock(ServiceProviderLock)
+                lock (ServiceProviderLock)
                 {
-                    if(reference == null)
+                    if (reference == null)
                     {
                         reference = ServiceProvider.GetRequiredService<TService>();
                     }

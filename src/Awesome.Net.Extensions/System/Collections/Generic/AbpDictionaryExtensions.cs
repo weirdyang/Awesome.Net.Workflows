@@ -162,7 +162,7 @@ namespace System.Collections.Generic
 
             return someObject;
         }
-        
+
         public static dynamic AsDynamic(this IDictionary<string, object> dictionary)
         {
             var expandoObj = new ExpandoObject();

@@ -17,14 +17,15 @@ namespace Awesome.Net.Workflows.Converters
 
         public override bool CanRead => false;
 
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue,
+            JsonSerializer serializer)
         {
             throw new NotImplementedException();
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            var localizedString = (LocalizedString)value;
+            var localizedString = (LocalizedString) value;
             writer.WriteValue(localizedString.Value);
         }
     }

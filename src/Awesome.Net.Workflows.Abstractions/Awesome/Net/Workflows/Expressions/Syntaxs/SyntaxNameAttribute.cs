@@ -26,7 +26,7 @@ namespace Awesome.Net.Workflows.Expressions.Syntaxs
                 .OfType<SyntaxNameAttribute>()
                 .FirstOrDefault();
 
-            if(filterNameAttribute != null)
+            if (filterNameAttribute != null)
             {
                 return filterNameAttribute.Name;
             }

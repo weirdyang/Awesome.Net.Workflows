@@ -12,6 +12,6 @@ namespace Awesome.Net.Workflows.Contexts
 
         public WorkflowExecutionContext WorkflowContext { get; }
 
-        public IList<IGlobalMethodProvider> ScopedMethodProviders { get; } = new List<IGlobalMethodProvider>();
+        public IList<IScriptMethodProvider> ScopedMethodProviders { get; } = new List<IScriptMethodProvider>();
     }
 }

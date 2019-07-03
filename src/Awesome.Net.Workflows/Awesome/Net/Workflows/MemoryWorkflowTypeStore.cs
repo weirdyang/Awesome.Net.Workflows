@@ -64,7 +64,7 @@ namespace Awesome.Net.Workflows
 
         public Task SaveAsync(WorkflowType workflowType)
         {
-            if(Query.ContainsKey(workflowType.Id))
+            if (Query.ContainsKey(workflowType.Id))
             {
                 return UpdateAsync(workflowType);
             }

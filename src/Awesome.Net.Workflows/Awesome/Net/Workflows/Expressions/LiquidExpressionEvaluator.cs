@@ -43,7 +43,7 @@ namespace Awesome.Net.Workflows.Expressions
 
             var result = await _liquidTemplateManager.RenderAsync(expression,
                 System.Text.Encodings.Web.JavaScriptEncoder.Default, templateContext);
-            return string.IsNullOrWhiteSpace(result) ? default : (T)Convert.ChangeType(result, typeof(T));
+            return string.IsNullOrWhiteSpace(result) ? default : (T) Convert.ChangeType(result, typeof(T));
         }
 
         private Task<TemplateContext> CreateTemplateContextAsync(WorkflowExecutionContext workflowContext)
@@ -68,7 +68,7 @@ namespace Awesome.Net.Workflows.Expressions
 
         private Task<FluidValue> ToFluidValue(IDictionary<string, object> dictionary, string key)
         {
-            if(!dictionary.ContainsKey(key))
+            if (!dictionary.ContainsKey(key))
             {
                 return Task.FromResult(default(FluidValue));
             }

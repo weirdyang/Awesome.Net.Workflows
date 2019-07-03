@@ -5,7 +5,8 @@ namespace Awesome.Net.Workflows
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddActivity<T>(this IServiceCollection services) where T : class, IActivity
+        public static IServiceCollection AddWorkflowActivity<T>(this IServiceCollection services)
+            where T : class, IActivity
         {
             services.AddScoped<T>();
 

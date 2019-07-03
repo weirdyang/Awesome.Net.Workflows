@@ -13,26 +13,26 @@ namespace Awesome.Net.Scripting
 
         public DefaultScriptingManager(
             IEnumerable<IScriptingEngine> engines,
-            IEnumerable<IGlobalMethodProvider> globalMethodProviders,
+            IEnumerable<IScriptMethodProvider> globalMethodProviders,
             IServiceProvider serviceProvider)
         {
             _engines = engines;
             _serviceProvider = serviceProvider;
-            GlobalMethodProviders = new List<IGlobalMethodProvider>(globalMethodProviders);
+            GlobalMethodProviders = new List<IScriptMethodProvider>(globalMethodProviders);
         }
 
-        public IList<IGlobalMethodProvider> GlobalMethodProviders { get; }
+        public IList<IScriptMethodProvider> GlobalMethodProviders { get; }
 
         public object Evaluate(string directive,
             IFileProvider fileProvider,
             string basePath,
-            IEnumerable<IGlobalMethodProvider> scopedMethodProviders)
+            IEnumerable<IScriptMethodProvider> scopedMethodProviders)
         {
-            if(directive == null) throw new ArgumentNullException(nameof(directive));
+            if (directive == null) throw new ArgumentNullException(nameof(directive));
 
             var directiveIndex = directive.IndexOf(":", StringComparison.Ordinal);
 
-            if(directiveIndex == -1 || directiveIndex >= directive.Length - 2)
+            if (directiveIndex == -1 || directiveIndex >= directive.Length - 2)
             {
                 return directive;
             }
@@ -41,16 +41,19 @@ namespace Awesome.Net.Scripting
             var script = directive.Substring(directiveIndex + 1);
 
             var engine = GetScriptingEngine(prefix);
-            if(engine == null)
+            if (engine == null)
             {
                 return directive;
             }
 
-            var methodProviders = scopedMethodProviders != null ? GlobalMethodProviders.Concat(scopedMethodProviders) : GlobalMethodProviders;
+            var methodProviders = scopedMethodProviders != null
+                ? GlobalMethodProviders.Concat(scopedMethodProviders)
+                : GlobalMethodProviders;
 
-            using(var scope = _serviceProvider.CreateScope())
+            using (var scope = _serviceProvider.CreateScope())
             {
-                var scriptingScope = engine.CreateScope(methodProviders.SelectMany(x => x.GetMethods()), scope.ServiceProvider, fileProvider, basePath);
+                var scriptingScope = engine.CreateScope(methodProviders.SelectMany(x => x.GetMethods()),
+                    scope.ServiceProvider, fileProvider, basePath);
 
                 return engine.Evaluate(scriptingScope, script);
             }

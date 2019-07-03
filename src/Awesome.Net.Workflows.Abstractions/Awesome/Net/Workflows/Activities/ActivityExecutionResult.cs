@@ -12,12 +12,12 @@ namespace Awesome.Net.Workflows.Activities
 
         public static ActivityExecutionResult FromOutcomes(IEnumerable<string> outcomes)
         {
-            return new ActivityExecutionResult { Outcomes = outcomes.ToList() };
+            return new ActivityExecutionResult {Outcomes = outcomes.ToList()};
         }
 
         public static ActivityExecutionResult Halt()
         {
-            return new ActivityExecutionResult { IsHalted = true };
+            return new ActivityExecutionResult {IsHalted = true};
         }
 
         private ActivityExecutionResult()

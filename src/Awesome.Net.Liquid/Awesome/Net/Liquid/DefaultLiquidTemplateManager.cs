@@ -28,7 +28,7 @@ namespace Awesome.Net.Liquid
         public async Task RenderAsync(string source, TextWriter textWriter, TextEncoder encoder,
             TemplateContext context)
         {
-            if(string.IsNullOrWhiteSpace(source))
+            if (string.IsNullOrWhiteSpace(source))
             {
                 return;
             }
@@ -37,7 +37,7 @@ namespace Awesome.Net.Liquid
 
             var result = _memoryCache.GetOrCreate(source, e =>
             {
-                if(!LiquidViewTemplate.TryParse(source, out var parsed, out errors))
+                if (!LiquidViewTemplate.TryParse(source, out var parsed, out errors))
                 {
                     // If the source string cannot be parsed, create a template that contains the parser errors
                     LiquidViewTemplate.TryParse(string.Join(Environment.NewLine, errors), out parsed, out errors);

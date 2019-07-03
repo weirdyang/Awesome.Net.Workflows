@@ -28,7 +28,7 @@ namespace Awesome.Net.Workflows
             {
                 var json = _dataProtector.Unprotect(token, out var expiration);
 
-                if(DateTimeOffset.UtcNow < expiration.ToUniversalTime())
+                if (DateTimeOffset.UtcNow < expiration.ToUniversalTime())
                 {
                     payload = JsonConvert.DeserializeObject<T>(json);
                     return true;

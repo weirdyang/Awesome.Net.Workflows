@@ -14,7 +14,8 @@ namespace Awesome.Net.Liquid.Filters
             _liquidTemplateManager = liquidTemplateManager;
         }
 
-        public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments,
+            TemplateContext ctx)
         {
             var context = new TemplateContext();
 

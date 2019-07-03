@@ -19,7 +19,7 @@ namespace System
         public static T As<T>(this object obj)
             where T : class
         {
-            return (T)obj;
+            return (T) obj;
         }
 
         /// <summary>
@@ -31,7 +31,7 @@ namespace System
         public static T To<T>(this object obj)
             where T : struct
         {
-            return (T)Convert.ChangeType(obj, typeof(T), CultureInfo.InvariantCulture);
+            return (T) Convert.ChangeType(obj, typeof(T), CultureInfo.InvariantCulture);
         }
 
         /// <summary>

@@ -127,12 +127,12 @@ namespace Awesome.Net.Workflows.Contexts
                 {
                     yield return transition.SourceActivityId;
 
-                    foreach (var parentActivityId in GetInboundActivityPathInternal(transition.SourceActivityId, startingPointActivityId).Distinct())
+                    foreach (var parentActivityId in GetInboundActivityPathInternal(transition.SourceActivityId,
+                        startingPointActivityId).Distinct())
                     {
                         yield return parentActivityId;
                     }
                 }
-
             }
         }
     }

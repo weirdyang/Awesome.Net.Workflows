@@ -39,10 +39,11 @@ namespace Awesome.Net.Workflows
     {
         public static T InstantiateActivity<T>(this IActivityLibrary library, string name) where T : IActivity
         {
-            return (T)library.InstantiateActivity(name);
+            return (T) library.InstantiateActivity(name);
         }
 
-        public static T InstantiateActivity<T>(this IActivityLibrary library, string name, JObject properties) where T : IActivity
+        public static T InstantiateActivity<T>(this IActivityLibrary library, string name, JObject properties)
+            where T : IActivity
         {
             var activity = InstantiateActivity<T>(library, name);
 

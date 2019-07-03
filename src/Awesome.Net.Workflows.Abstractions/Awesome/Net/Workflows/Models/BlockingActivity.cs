@@ -6,9 +6,7 @@ namespace Awesome.Net.Workflows.Models
         {
             return new BlockingActivity
             {
-                ActivityId = activity.ActivityId,
-                IsStart = activity.IsStart,
-                Name = activity.Name
+                ActivityId = activity.ActivityId, IsStart = activity.IsStart, Name = activity.Name
             };
         }
 

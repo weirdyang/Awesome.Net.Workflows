@@ -42,7 +42,7 @@ namespace Awesome.Net.Workflows.Activities
         {
             var outcomes = new List<string>();
 
-            var scopedMethodProviders = new List<IGlobalMethodProvider> {new OutcomeMethodProvider(outcomes)};
+            var scopedMethodProviders = new List<IScriptMethodProvider> {new OutcomeScriptMethodProvider(outcomes)};
 
             await ExpressionEvaluator.EvaluateAsync(Script, workflowContext, scopedMethodProviders.AsDictionary());
             return Outcomes(outcomes);

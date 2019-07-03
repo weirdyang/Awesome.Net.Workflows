@@ -9,7 +9,6 @@ namespace Awesome.Net.Scripting.Engines
 {
     public class JavaScriptEngine : IScriptingEngine
     {
-        
         private readonly IMemoryCache _memoryCache;
 
         public JavaScriptEngine(IMemoryCache memoryCache)
@@ -19,11 +18,12 @@ namespace Awesome.Net.Scripting.Engines
 
         public string Prefix => "js";
 
-        public IScriptingScope CreateScope(IEnumerable<GlobalMethod> methods, IServiceProvider serviceProvider, IFileProvider fileProvider, string basePath)
+        public IScriptingScope CreateScope(IEnumerable<ScriptMethod> methods, IServiceProvider serviceProvider,
+            IFileProvider fileProvider, string basePath)
         {
             var engine = new Engine(options => { options.AllowClr(); });
 
-            foreach(var method in methods)
+            foreach (var method in methods)
             {
                 engine.SetValue(method.Name, method.Method(serviceProvider));
             }
@@ -33,14 +33,14 @@ namespace Awesome.Net.Scripting.Engines
 
         public object Evaluate(IScriptingScope scope, string script)
         {
-            if(scope == null)
+            if (scope == null)
             {
                 throw new ArgumentNullException(nameof(scope));
             }
 
             var jsScope = scope as JavaScriptScope;
 
-            if(jsScope == null)
+            if (jsScope == null)
             {
                 throw new ArgumentException($"Expected a scope of type {nameof(JavaScriptScope)}", nameof(scope));
             }
@@ -61,6 +61,7 @@ namespace Awesome.Net.Scripting.Engines
     {
         public IList<object> Arguments { get; set; }
         public Func<IServiceProvider, IList<object>, object> Callback { get; set; }
+
         public object Invoke()
         {
             return Callback(null, Arguments);

@@ -8,6 +8,8 @@ namespace Awesome.Net.Scripting
     {
         string Prefix { get; }
         object Evaluate(IScriptingScope scope, string script);
-        IScriptingScope CreateScope(IEnumerable<GlobalMethod> methods, IServiceProvider serviceProvider, IFileProvider fileProvider, string basePath);
+
+        IScriptingScope CreateScope(IEnumerable<ScriptMethod> methods, IServiceProvider serviceProvider,
+            IFileProvider fileProvider, string basePath);
     }
 }

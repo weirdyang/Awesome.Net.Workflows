@@ -13,7 +13,7 @@ namespace Awesome.Net.Workflows.Handlers
 
         public Task EvaluatingScriptAsync(WorkflowExecutionScriptContext context)
         {
-            context.ScopedMethodProviders.Add(new WorkflowMethodsProvider(context.WorkflowContext));
+            context.ScopedMethodProviders.Add(new WorkflowScriptMethodsProvider(context.WorkflowContext));
             return Task.CompletedTask;
         }
     }

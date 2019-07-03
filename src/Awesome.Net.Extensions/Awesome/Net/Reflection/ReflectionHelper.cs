@@ -25,7 +25,8 @@ namespace Awesome.Net.Reflection
 
             foreach (var interfaceType in givenTypeInfo.GetInterfaces())
             {
-                if (interfaceType.GetTypeInfo().IsGenericType && interfaceType.GetGenericTypeDefinition() == genericType)
+                if (interfaceType.GetTypeInfo().IsGenericType &&
+                    interfaceType.GetGenericTypeDefinition() == genericType)
                 {
                     return true;
                 }
@@ -58,7 +59,8 @@ namespace Awesome.Net.Reflection
 
             foreach (var interfaceType in givenTypeInfo.GetInterfaces())
             {
-                if (interfaceType.GetTypeInfo().IsGenericType && interfaceType.GetGenericTypeDefinition() == genericType)
+                if (interfaceType.GetTypeInfo().IsGenericType &&
+                    interfaceType.GetGenericTypeDefinition() == genericType)
                 {
                     result.Add(interfaceType);
                 }
@@ -80,7 +82,8 @@ namespace Awesome.Net.Reflection
         /// <param name="memberInfo">MemberInfo</param>
         /// <param name="defaultValue">Default value (null as default)</param>
         /// <param name="inherit">Inherit attribute from base classes</param>
-        public static TAttribute GetSingleAttributeOrDefault<TAttribute>(MemberInfo memberInfo, TAttribute defaultValue = default, bool inherit = true)
+        public static TAttribute GetSingleAttributeOrDefault<TAttribute>(MemberInfo memberInfo,
+            TAttribute defaultValue = default, bool inherit = true)
             where TAttribute : Attribute
         {
             //Get attribute on the member
@@ -100,11 +103,13 @@ namespace Awesome.Net.Reflection
         /// <param name="memberInfo">MemberInfo</param>
         /// <param name="defaultValue">Default value (null as default)</param>
         /// <param name="inherit">Inherit attribute from base classes</param>
-        public static TAttribute GetSingleAttributeOfMemberOrDeclaringTypeOrDefault<TAttribute>(MemberInfo memberInfo, TAttribute defaultValue = default, bool inherit = true)
+        public static TAttribute GetSingleAttributeOfMemberOrDeclaringTypeOrDefault<TAttribute>(MemberInfo memberInfo,
+            TAttribute defaultValue = default, bool inherit = true)
             where TAttribute : class
         {
             return memberInfo.GetCustomAttributes(true).OfType<TAttribute>().FirstOrDefault()
-                   ?? memberInfo.DeclaringType?.GetTypeInfo().GetCustomAttributes(true).OfType<TAttribute>().FirstOrDefault()
+                   ?? memberInfo.DeclaringType?.GetTypeInfo().GetCustomAttributes(true).OfType<TAttribute>()
+                       .FirstOrDefault()
                    ?? defaultValue;
         }
 
@@ -185,7 +190,8 @@ namespace Awesome.Net.Reflection
                     return;
                 }
 
-                constants.AddRange(targetType.GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy)
+                constants.AddRange(targetType
+                    .GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy)
                     .Where(x => x.IsLiteral && !x.IsInitOnly)
                     .Select(x => x.GetValue(null).ToString()));
 

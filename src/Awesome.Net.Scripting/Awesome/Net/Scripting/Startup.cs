@@ -9,24 +9,18 @@ namespace Awesome.Net.Scripting
         {
             services.AddSingleton<IScriptingManager, DefaultScriptingManager>();
 
-            services.AddGlobalMethodProvider<CommonMethodsProvider>();
+            services.AddSingleton<IScriptingEngine, FilesScriptEngine>();
+            services.AddSingleton<IScriptingEngine, JavaScriptEngine>();
 
-            services.AddScriptingEngine<FilesScriptEngine>();
-            services.AddScriptingEngine<JavaScriptEngine>();
+            services.AddGlobalScriptMethodProvider<CommonScriptMethodProvider>();
+
             return services;
         }
 
-        public static IServiceCollection AddScriptingEngine<T>(this IServiceCollection services)
-            where T : class, IScriptingEngine
+        public static IServiceCollection AddGlobalScriptMethodProvider<T>(this IServiceCollection services)
+            where T : class, IScriptMethodProvider
         {
-            services.AddSingleton<IScriptingEngine, T>();
-            return services;
-        }
-
-        public static IServiceCollection AddGlobalMethodProvider<T>(this IServiceCollection services)
-            where T : class, IGlobalMethodProvider
-        {
-            services.AddSingleton<IGlobalMethodProvider, T>();
+            services.AddSingleton<IScriptMethodProvider, T>();
             return services;
         }
     }

@@ -20,7 +20,8 @@ namespace Awesome.Net.Liquid
             ConfigureFluid();
         }
 
-        public static IServiceCollection AddLiquidFilter<T>(this IServiceCollection services, string name) where T : class, ILiquidFilter
+        public static IServiceCollection AddLiquidFilter<T>(this IServiceCollection services, string name)
+            where T : class, ILiquidFilter
         {
             services.AddScoped<T>();
             services.Configure<LiquidOptions>(options => options.FilterRegistrations.Add(name, typeof(T)));
@@ -34,7 +35,7 @@ namespace Awesome.Net.Liquid
 
             // Prevent JTokens from being converted to an ArrayValue as they implement IEnumerable
             FluidValue.TypeMappings.Add(typeof(JObject), o => new ObjectValue(o));
-            FluidValue.TypeMappings.Add(typeof(JValue), o => FluidValue.Create(((JValue)o).Value));
+            FluidValue.TypeMappings.Add(typeof(JValue), o => FluidValue.Create(((JValue) o).Value));
             FluidValue.TypeMappings.Add(typeof(System.DateTime), o => new ObjectValue(o));
         }
     }

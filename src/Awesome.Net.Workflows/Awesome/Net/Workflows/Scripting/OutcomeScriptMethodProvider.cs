@@ -4,19 +4,19 @@ using Awesome.Net.Scripting;
 
 namespace Awesome.Net.Workflows.Scripting
 {
-    public class OutcomeMethodProvider : IGlobalMethodProvider
+    public class OutcomeScriptMethodProvider : IScriptMethodProvider
     {
-        private readonly GlobalMethod _setOutcomeMethod;
+        private readonly ScriptMethod _setOutcomeMethod;
 
-        public OutcomeMethodProvider(IList<string> outcomes)
+        public OutcomeScriptMethodProvider(IList<string> outcomes)
         {
-            _setOutcomeMethod = new GlobalMethod
+            _setOutcomeMethod = new ScriptMethod
             {
                 Name = "setOutcome", Method = serviceProvider => (Action<string>) (name => outcomes.Add(name))
             };
         }
 
-        public IEnumerable<GlobalMethod> GetMethods()
+        public IEnumerable<ScriptMethod> GetMethods()
         {
             return new[] {_setOutcomeMethod};
         }
