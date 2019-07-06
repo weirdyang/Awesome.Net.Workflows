@@ -14,12 +14,12 @@ namespace Awesome.Net.Workflows
     public class MemoryWorkflowTypeStore : IWorkflowTypeStore
     {
         protected readonly ConcurrentDictionary<Guid, WorkflowType> Query;
-        private readonly IEnumerable<IWorkflowTypeEventHandler> _handlers;
+        private readonly IEnumerable<IWorkflowTypePersistenceEventHandler> _handlers;
         public readonly ILogger<MemoryWorkflowTypeStore> _logger;
 
         public MemoryWorkflowTypeStore(
             ConcurrentDictionary<Guid, WorkflowType> query,
-            IEnumerable<IWorkflowTypeEventHandler> handlers,
+            IEnumerable<IWorkflowTypePersistenceEventHandler> handlers,
             ILogger<MemoryWorkflowTypeStore> logger)
         {
             Query = query;
@@ -56,7 +56,7 @@ namespace Awesome.Net.Workflows
 
         public Task<IEnumerable<WorkflowType>> GetByStartActivityAsync(string activityName)
         {
-            var query = Query.Select(x => x.Value).Where(x => x.Activities.Any(a => a.Name == activityName));
+            var query = Query.Select(x => x.Value).Where(x => x.Activities.Any(a => a.TypeName == activityName));
             query = query.Where(x => x.IsEnabled);
 
             return Task.FromResult(query);

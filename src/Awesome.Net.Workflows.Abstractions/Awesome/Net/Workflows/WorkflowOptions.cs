@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Awesome.Net.Workflows.Activities;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Awesome.Net.Workflows
 {
@@ -10,55 +12,43 @@ namespace Awesome.Net.Workflows
         /// The set of activities available to workflows.
         /// Modules can register and unregister activities.
         /// </summary>
-        private IDictionary<Type, Type> ActivityDictionary { get; } = new Dictionary<Type, Type>();
+        public IDictionary<Type, Type> ActivityDictionary { get; } = new Dictionary<Type, Type>();
 
         public IEnumerable<Type> ActivityTypes => ActivityDictionary.Values.ToList().AsReadOnly();
 
-        public WorkflowOptions RegisterActivity(Type activityType)
+        public IServiceCollection Services { get; }
+
+        public WorkflowOptions(IServiceCollection services)
         {
-            if (!ActivityDictionary.ContainsKey(activityType))
-            {
-                ActivityDictionary.Add(activityType, activityType);
-            }
-
-            return this;
-        }
-
-        public WorkflowOptions UnregisterActivityType(Type activityType)
-        {
-            if (!ActivityDictionary.ContainsKey(activityType))
-                throw new InvalidOperationException("The specified activity type is not registered.");
-
-            ActivityDictionary.Remove(activityType);
-            return this;
-        }
-
-        public bool IsActivityRegistered(Type activityType)
-        {
-            return ActivityDictionary.ContainsKey(activityType);
+            Services = services;
         }
     }
 
     public static class WorkflowOptionsExtensions
     {
-        public static WorkflowOptions RegisterActivityType<T>(this WorkflowOptions options)
+        public static WorkflowOptions RegisterActivity<T>(this WorkflowOptions options) where T : IActivity
         {
-            return options.RegisterActivity(typeof(T));
+            if (!options.IsActivityRegistered<T>())
+            {
+                var activityType = typeof(T);
+                options.ActivityDictionary.Add(activityType, activityType);
+            }
+
+            return options;
         }
 
-        public static WorkflowOptions RegisterActivity<T>(this WorkflowOptions options)
+        public static WorkflowOptions UnregisterActivityType<T>(this WorkflowOptions options) where T : IActivity
         {
-            return options.RegisterActivity(typeof(T));
+            if (!options.IsActivityRegistered<T>())
+                throw new InvalidOperationException("The specified activity type is not registered.");
+
+            options.ActivityDictionary.Remove(typeof(T));
+            return options;
         }
 
-        public static WorkflowOptions UnregisterActivityType<T>(this WorkflowOptions options)
+        public static bool IsActivityRegistered<T>(this WorkflowOptions options) where T : IActivity
         {
-            return options.UnregisterActivityType(typeof(T));
-        }
-
-        public static bool IsActivityRegistered<T>(this WorkflowOptions options)
-        {
-            return options.IsActivityRegistered(typeof(T));
+            return options.ActivityDictionary.ContainsKey(typeof(T));
         }
     }
 }

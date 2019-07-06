@@ -20,32 +20,32 @@ namespace Awesome.Net.Workflows
         IEnumerable<LocalizedString> ListCategories();
 
         /// <summary>
-        /// Returns an activity instance with the specified name from the library.
+        /// Returns an activity instance with the specified typeName from the library.
         /// </summary>
-        IActivity GetActivityByName(string name);
+        IActivity GetActivityByName(string typeName);
 
         /// <summary>
-        /// Returns a new instance of the activity with the specified name.
+        /// Returns a new instance of the activity with the specified typeName.
         /// </summary>
-        IActivity InstantiateActivity(string name);
+        IActivity InstantiateActivity(string typeName);
 
         /// <summary>
         /// Returns new instances the specified activities.
         /// </summary>
-        IEnumerable<IActivity> InstantiateActivities(IEnumerable<string> activityNames);
+        IEnumerable<IActivity> InstantiateActivities(IEnumerable<string> activityTypeNames);
     }
 
     public static class ActivityLibraryExtensions
     {
-        public static T InstantiateActivity<T>(this IActivityLibrary library, string name) where T : IActivity
+        public static T InstantiateActivity<T>(this IActivityLibrary library, string typeName) where T : IActivity
         {
-            return (T) library.InstantiateActivity(name);
+            return (T) library.InstantiateActivity(typeName);
         }
 
-        public static T InstantiateActivity<T>(this IActivityLibrary library, string name, JObject properties)
+        public static T InstantiateActivity<T>(this IActivityLibrary library, string typeName, JObject properties)
             where T : IActivity
         {
-            var activity = InstantiateActivity<T>(library, name);
+            var activity = InstantiateActivity<T>(library, typeName);
 
             if (activity != null)
             {
@@ -57,7 +57,7 @@ namespace Awesome.Net.Workflows
 
         public static T InstantiateActivity<T>(this IActivityLibrary library, ActivityRecord record) where T : IActivity
         {
-            return InstantiateActivity<T>(library, record.Name, record.Properties);
+            return InstantiateActivity<T>(library, record.TypeName, record.Properties);
         }
     }
 }

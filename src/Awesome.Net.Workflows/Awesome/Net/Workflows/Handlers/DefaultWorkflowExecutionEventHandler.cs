@@ -4,7 +4,7 @@ using Awesome.Net.Workflows.Scripting;
 
 namespace Awesome.Net.Workflows.Handlers
 {
-    public class DefaultWorkflowExecutionContextHandler : IWorkflowExecutionContextHandler
+    public class DefaultWorkflowExecutionEventHandler : IWorkflowExecutionEventHandler
     {
         public Task EvaluatingLiquidAsync(WorkflowExecutionLiquidContext context)
         {

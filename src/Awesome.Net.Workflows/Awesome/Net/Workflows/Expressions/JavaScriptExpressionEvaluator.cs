@@ -12,15 +12,15 @@ namespace Awesome.Net.Workflows.Expressions
 {
     public class JavaScriptExpressionEvaluator : IExpressionEvaluator
     {
-        private readonly IEnumerable<IWorkflowExecutionContextHandler> _workflowContextHandlers;
+        private readonly IEnumerable<IWorkflowExecutionEventHandler> _workflowContextHandlers;
         private readonly ILogger<JavaScriptExpressionEvaluator> _logger;
 
         private readonly IScriptingManager _scriptingManager;
-        public string Syntax => SyntaxNameAttribute.GetSyntax(typeof(JavaScriptExpression));
+        public string Syntax => SyntaxNameAttribute.GetSyntax(typeof(JavaScriptExpr));
 
         public JavaScriptExpressionEvaluator(
             IScriptingManager scriptingManager,
-            IEnumerable<IWorkflowExecutionContextHandler> workflowContextHandlers,
+            IEnumerable<IWorkflowExecutionEventHandler> workflowContextHandlers,
             ILogger<JavaScriptExpressionEvaluator> logger)
         {
             _scriptingManager = scriptingManager;

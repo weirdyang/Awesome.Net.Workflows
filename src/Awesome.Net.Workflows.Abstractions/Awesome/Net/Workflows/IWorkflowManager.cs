@@ -3,13 +3,17 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Awesome.Net.Workflows.Activities;
 using Awesome.Net.Workflows.Contexts;
+using Awesome.Net.Workflows.FluentBuilders;
 using Awesome.Net.Workflows.Models;
 using Newtonsoft.Json.Linq;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Awesome.Net.Workflows
 {
     public interface IWorkflowManager
     {
+        IServiceProvider ServiceProvide { get; }
+
         /// <summary>
         /// Creates a new workflow instance for the specified workflow definition.
         /// </summary>
@@ -24,25 +28,25 @@ namespace Awesome.Net.Workflows
         /// <summary>
         /// Creates a new <see cref="ActivityExecutionContext"/>.
         /// </summary>
-        /// <param name="activityRecord"></param>
+        /// <param typeName="activityRecord"></param>
         Task<ActivityExecutionContext> CreateActivityExecutionContextAsync(ActivityRecord activityRecord,
             JObject properties);
 
         /// <summary>
         /// Triggers a specific <see cref="IEvent"/>.
         /// </summary>
-        /// <param name="name">The type of the event to trigger, e.g. ContentPublishedEvent.</param>
-        /// <param name="input">An object containing context for the event.</param>
-        /// <param name="correlationId">Optionally specify a application-specific value to associate the workflow instance with. For example, a content item ID.</param>
-        Task TriggerEventAsync(string name, IDictionary<string, object> input = null, string correlationId = null);
+        /// <param typeName="typeName">The type of the event to trigger, e.g. ContentPublishedEvent.</param>
+        /// <param typeName="input">An object containing context for the event.</param>
+        /// <param typeName="correlationId">Optionally specify a application-specific value to associate the workflow instance with. For example, a content item ID.</param>
+        Task TriggerEventAsync(string typeName, IDictionary<string, object> input = null, string correlationId = null);
 
         /// <summary>
         /// Starts a new workflow using the specified workflow definition.
         /// </summary>
-        /// <param name="workflowType">The workflow definition to start.</param>
-        /// <param name="input">Optionally specify any inputs to be used by the workflow.</param>
-        /// <param name="correlationId">Optionally specify an application-specific value to associate the workflow instance with. For example, a content item ID.</param>
-        /// <param name="startActivityName">If a workflow definition contains multiple start activities, you can specify which one to use. If none specified, the first one will be used.</param>
+        /// <param typeName="workflowType">The workflow definition to start.</param>
+        /// <param typeName="input">Optionally specify any inputs to be used by the workflow.</param>
+        /// <param typeName="correlationId">Optionally specify an application-specific value to associate the workflow instance with. For example, a content item ID.</param>
+        /// <param typeName="startActivityName">If a workflow definition contains multiple start activities, you can specify which one to use. If none specified, the first one will be used.</param>
         /// <returns>Returns the created workflow context. Can be used for further inspection of the workflow state.</returns>
         Task<WorkflowExecutionContext> StartWorkflowAsync(WorkflowType workflowType,
             ActivityRecord startActivity = null, IDictionary<string, object> input = null, string correlationId = null);
@@ -62,11 +66,23 @@ namespace Awesome.Net.Workflows
 
     public static class WorkflowManagerExtensions
     {
-        public static Task TriggerEventAsync(this IWorkflowManager workflowManager, string name, object input = null,
+        public static Task TriggerEventAsync(this IWorkflowManager workflowManager, string typeName,
+            object input = null,
             string correlationId = null)
         {
-            throw new NotImplementedException();
-            //return workflowManager.TriggerEventAsync(name, new RouteValueDictionary(input), correlationId);
+            return workflowManager.TriggerEventAsync(typeName, input.AsDictionary(), correlationId);
+        }
+
+        /// <summary>
+        /// Starts a new workflow using the specified workflow definition.
+        /// </summary>
+        public static Task<WorkflowExecutionContext> StartWorkflowAsync<T>(this IWorkflowManager workflowManager,
+            ActivityRecord startActivity = null, IDictionary<string, object> input = null, string correlationId = null)
+            where T : IWorkflow, new()
+        {
+            var builder = workflowManager.ServiceProvide.GetService<IWorkflowBuilder>();
+            var workflowType = builder.Build<T>();
+            return workflowManager.StartWorkflowAsync(workflowType, startActivity, input, correlationId);
         }
     }
 }

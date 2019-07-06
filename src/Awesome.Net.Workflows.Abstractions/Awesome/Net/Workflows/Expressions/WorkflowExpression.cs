@@ -1,33 +1,17 @@
-using Awesome.Net.Workflows.Expressions.Syntaxs;
-
 namespace Awesome.Net.Workflows.Expressions
 {
-    public abstract class WorkflowExpression
+    public class WorkflowExpression<TReturn>
     {
-        protected WorkflowExpression()
-        {
-        }
+        public string Syntax { get; }
 
-        protected WorkflowExpression(string expression)
-        {
-            Expression = expression;
-        }
-
-        public string Syntax => SyntaxNameAttribute.GetSyntax(GetType());
-
-        public string Expression { get; set; }
+        public string Expression { get; }
 
         public override string ToString() => Expression;
-    }
 
-    public abstract class WorkflowExpression<T> : WorkflowExpression, IWorkflowExpression<T>
-    {
-        protected WorkflowExpression()
+        public WorkflowExpression(string expression, string syntax)
         {
-        }
-
-        protected WorkflowExpression(string expression) : base(expression)
-        {
+            Expression = expression;
+            Syntax = syntax;
         }
     }
 }

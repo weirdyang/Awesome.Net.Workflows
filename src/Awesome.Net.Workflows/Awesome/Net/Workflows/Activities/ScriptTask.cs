@@ -25,9 +25,9 @@ namespace Awesome.Net.Workflows.Activities
         /// <summary>
         /// The script can call any available functions, including setOutcome().
         /// </summary>
-        public IWorkflowExpression<object> Script
+        public WorkflowExpression<object> Script
         {
-            get => GetProperty(() => new JavaScriptExpression<object>("setOutcome('Done');"));
+            get => GetExpressionProperty(new JavaScriptExpr<object>("setOutcome('Done');"));
             set => SetProperty(value);
         }
 

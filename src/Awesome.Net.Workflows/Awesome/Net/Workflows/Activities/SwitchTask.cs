@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Awesome.Net.Workflows.Contexts;
 using Awesome.Net.Workflows.Expressions;
@@ -8,39 +9,38 @@ using Microsoft.Extensions.Localization;
 
 namespace Awesome.Net.Workflows.Activities
 {
-    public class SetPropertyTask : TaskActivity
+    public class SwitchTask : TaskActivity
     {
-        public override LocalizedString Category => T["Primitives"];
+        public override LocalizedString Category => T["Control Flow"];
 
-        public string PropertyName
+        public SwitchTask(IServiceProvider serviceProvider) : base(serviceProvider)
         {
-            get => GetProperty<string>();
+            Cases = new List<string>();
+        }
+
+        public WorkflowExpression<string> Expression
+        {
+            get => GetExpressionProperty<string>();
             set => SetProperty(value);
         }
 
-        public WorkflowExpression<object> Value
+        public IReadOnlyCollection<string> Cases
         {
-            get => GetExpressionProperty<object>();
+            get => GetProperty<IReadOnlyCollection<string>>();
             set => SetProperty(value);
         }
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext,
             ActivityExecutionContext activityContext)
         {
-            return Outcomes(T["Done"]);
+            return Outcomes(Cases.Select(x => T[x]).ToArray());
         }
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext,
             ActivityExecutionContext activityContext)
         {
-            var value = await ExpressionEvaluator.EvaluateAsync(Value, workflowContext);
-            workflowContext.Properties[PropertyName] = value;
-
-            return Outcomes("Done");
-        }
-
-        public SetPropertyTask(IServiceProvider serviceProvider) : base(serviceProvider)
-        {
+            var @case = await ExpressionEvaluator.EvaluateAsync(Expression, workflowContext);
+            return Outcomes(@case);
         }
     }
 }

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Awesome.Net.Workflows.Contexts;
 using Awesome.Net.Workflows.Expressions;
-using Awesome.Net.Workflows.Expressions.Syntaxs;
 using Awesome.Net.Workflows.Models;
 using Microsoft.Extensions.Localization;
 
@@ -13,9 +12,9 @@ namespace Awesome.Net.Workflows.Activities
     {
         public override LocalizedString Category => T["Primitives"];
 
-        public IWorkflowExpression<string> Value
+        public WorkflowExpression<string> Value
         {
-            get => GetProperty(() => new JavaScriptExpression<string>());
+            get => GetExpressionProperty<string>();
             set => SetProperty(value);
         }
 

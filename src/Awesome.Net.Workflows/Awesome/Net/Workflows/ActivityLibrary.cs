@@ -5,7 +5,6 @@ using Awesome.Net.Workflows.Activities;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace Awesome.Net.Workflows
 {
@@ -16,16 +15,16 @@ namespace Awesome.Net.Workflows
         private readonly IServiceProvider _serviceProvider;
         private readonly ILogger<ActivityLibrary> _logger;
 
-        public ActivityLibrary(IOptions<WorkflowOptions> workflowOptions,
+        public ActivityLibrary(WorkflowOptions workflowOptions,
             IServiceProvider serviceProvider,
             ILogger<ActivityLibrary> logger)
         {
             _activityDictionary = new Lazy<IDictionary<string, IActivity>>(
-                () => workflowOptions.Value.ActivityTypes
+                () => workflowOptions.ActivityTypes
                     .Where(x => !x.IsAbstract)
                     .Select(x => serviceProvider.CreateInstance<IActivity>(x))
-                    .OrderBy(x => x.Name)
-                    .ToDictionary(x => x.Name));
+                    .OrderBy(x => x.TypeName)
+                    .ToDictionary(x => x.TypeName));
 
             _activityCategories = new Lazy<IList<LocalizedString>>(
                 () => _activityDictionary.Value.Values
@@ -51,30 +50,30 @@ namespace Awesome.Net.Workflows
             return ActivityCategories;
         }
 
-        public IActivity GetActivityByName(string name)
+        public IActivity GetActivityByName(string typeName)
         {
-            return ActivityDictionary.ContainsKey(name) ? ActivityDictionary[name] : null;
+            return ActivityDictionary.ContainsKey(typeName) ? ActivityDictionary[typeName] : null;
         }
 
-        public IActivity InstantiateActivity(string name)
+        public IActivity InstantiateActivity(string typeName)
         {
-            var activityType = GetActivityByName(name)?.GetType();
+            var activityType = GetActivityByName(typeName)?.GetType();
 
             if (activityType == null)
             {
                 _logger.LogWarning(
-                    "Requested activity '{ActivityName}' does not exist in the library. This could indicate a changed name or a missing feature.",
-                    name);
+                    "Requested activity '{ActivityName}' does not exist in the library. This could indicate a changed typeName or a missing feature.",
+                    typeName);
                 return null;
             }
 
             return InstantiateActivity(activityType);
         }
 
-        public IEnumerable<IActivity> InstantiateActivities(IEnumerable<string> activityNames)
+        public IEnumerable<IActivity> InstantiateActivities(IEnumerable<string> activityTypeNames)
         {
-            var activityNameList = activityNames.ToList();
-            foreach (var activitySample in ActivityDictionary.Values.Where(x => activityNameList.Contains(x.Name)))
+            var activityNameList = activityTypeNames.ToList();
+            foreach (var activitySample in ActivityDictionary.Values.Where(x => activityNameList.Contains(x.TypeName)))
             {
                 yield return InstantiateActivity(activitySample.GetType());
             }

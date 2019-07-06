@@ -1,15 +1,16 @@
+using Awesome.Net.Workflows.Activities;
 using Newtonsoft.Json.Linq;
 
 namespace Awesome.Net.Workflows.Models
 {
     public class ActivityRecord
     {
-        public string ActivityId { get; set; }
+        public string Id { get; set; }
 
         /// <summary>
         /// The type of the activity.
         /// </summary>
-        public string Name { get; set; }
+        public string TypeName { get; set; }
 
         /// <summary>
         /// The left coordinate of the activity.
@@ -27,5 +28,15 @@ namespace Awesome.Net.Workflows.Models
         public bool IsStart { get; set; }
 
         public JObject Properties { get; set; } = new JObject();
+
+        public static ActivityRecord FromActivity(IActivity activity)
+        {
+            return new ActivityRecord
+            {
+                IsStart = true,
+                Properties = new JObject(activity.Properties),
+                TypeName = activity.TypeName
+            };
+        }
     }
 }

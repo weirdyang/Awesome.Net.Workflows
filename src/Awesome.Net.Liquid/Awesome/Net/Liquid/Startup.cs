@@ -1,3 +1,5 @@
+using System;
+using System.Linq;
 using Awesome.Net.Liquid.Filters;
 using Fluid;
 using Fluid.Values;
@@ -8,24 +10,29 @@ namespace Awesome.Net.Liquid
 {
     public static class Startup
     {
-        public static void ConfigureLiquid(this IServiceCollection services)
+        public static void AddLiquid(this IServiceCollection services, Action<LiquidOptions> setupAction = null)
         {
+            if (services.Any(x => x.ServiceType == typeof(LiquidOptions)))
+            {
+                throw new InvalidOperationException("Liquid services already registered");
+            }
+
+            var options = new LiquidOptions(services);
+            setupAction?.Invoke(options);
+            options.AddCommonLiquidFilters();
+            services.AddSingleton(options);
+
             services.AddTransient<ISlugService, SlugService>();
             services.AddTransient<ILiquidTemplateManager, LiquidTemplateManager>();
-
-            services.AddLiquidFilter<SlugifyFilter>(LiquidFilterNameAttribute.GetName(typeof(SlugifyFilter)));
-            services.AddLiquidFilter<JsonFilter>(LiquidFilterNameAttribute.GetName(typeof(JsonFilter)));
-            services.AddLiquidFilter<LiquidFilter>(LiquidFilterNameAttribute.GetName(typeof(LiquidFilter)));
 
             ConfigureFluid();
         }
 
-        public static IServiceCollection AddLiquidFilter<T>(this IServiceCollection services, string name)
-            where T : class, ILiquidFilter
+        private static void AddCommonLiquidFilters(this LiquidOptions options)
         {
-            services.AddScoped<T>();
-            services.Configure<LiquidOptions>(options => options.FilterRegistrations.Add(name, typeof(T)));
-            return services;
+            options.RegisterFilter<SlugifyFilter>()
+                .RegisterFilter<JsonFilter>()
+                .RegisterFilter<LiquidFilter>();
         }
 
         private static void ConfigureFluid()
@@ -36,7 +43,7 @@ namespace Awesome.Net.Liquid
             // Prevent JTokens from being converted to an ArrayValue as they implement IEnumerable
             FluidValue.TypeMappings.Add(typeof(JObject), o => new ObjectValue(o));
             FluidValue.TypeMappings.Add(typeof(JValue), o => FluidValue.Create(((JValue) o).Value));
-            FluidValue.TypeMappings.Add(typeof(System.DateTime), o => new ObjectValue(o));
+            FluidValue.TypeMappings.Add(typeof(DateTime), o => new ObjectValue(o));
         }
     }
 }

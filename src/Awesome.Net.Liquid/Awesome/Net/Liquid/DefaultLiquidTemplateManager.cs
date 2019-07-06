@@ -5,7 +5,6 @@ using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Options;
 
 namespace Awesome.Net.Liquid
 {
@@ -17,11 +16,11 @@ namespace Awesome.Net.Liquid
 
         public LiquidTemplateManager(
             IMemoryCache memoryCache,
-            IOptions<LiquidOptions> options,
+            LiquidOptions options,
             IServiceProvider serviceProvider)
         {
             _memoryCache = memoryCache;
-            _liquidOptions = options.Value;
+            _liquidOptions = options;
             _serviceProvider = serviceProvider;
         }
 
@@ -33,11 +32,9 @@ namespace Awesome.Net.Liquid
                 return;
             }
 
-            IEnumerable<string> errors;
-
             var result = _memoryCache.GetOrCreate(source, e =>
             {
-                if (!LiquidViewTemplate.TryParse(source, out var parsed, out errors))
+                if (!LiquidViewTemplate.TryParse(source, out var parsed, out var errors))
                 {
                     // If the source string cannot be parsed, create a template that contains the parser errors
                     LiquidViewTemplate.TryParse(string.Join(Environment.NewLine, errors), out parsed, out errors);

@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Awesome.Net.Workflows.Contexts;
 using Awesome.Net.Workflows.Expressions;
-using Awesome.Net.Workflows.Expressions.Syntaxs;
 using Awesome.Net.Workflows.Models;
 using Microsoft.Extensions.Localization;
 
@@ -17,9 +16,9 @@ namespace Awesome.Net.Workflows.Activities
         /// <summary>
         /// An workflowExpression evaluating to an enumerable object to iterate over.
         /// </summary>
-        public IWorkflowExpression<IEnumerable<object>> Enumerable
+        public WorkflowExpression<IEnumerable<object>> Enumerable
         {
-            get => GetProperty(() => new JavaScriptExpression<IEnumerable<object>>());
+            get => GetExpressionProperty<IEnumerable<object>>();
             set => SetProperty(value);
         }
 

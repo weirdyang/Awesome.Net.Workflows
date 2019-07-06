@@ -6,11 +6,11 @@ namespace Awesome.Net.Workflows.Models
         {
             return new BlockingActivity
             {
-                ActivityId = activity.ActivityId, IsStart = activity.IsStart, Name = activity.Name
+                Id = activity.Id, IsStart = activity.IsStart, Name = activity.TypeName
             };
         }
 
-        public string ActivityId { get; set; }
+        public string Id { get; set; }
         public bool IsStart { get; set; }
         public string Name { get; set; }
     }

@@ -15,13 +15,13 @@ namespace Awesome.Net.Workflows.Expressions
     public class LiquidExpressionEvaluator : IExpressionEvaluator
     {
         private readonly ILiquidTemplateManager _liquidTemplateManager;
-        private readonly IEnumerable<IWorkflowExecutionContextHandler> _workflowContextHandlers;
+        private readonly IEnumerable<IWorkflowExecutionEventHandler> _workflowContextHandlers;
         private readonly ILogger<JavaScriptExpressionEvaluator> _logger;
-        public string Syntax => SyntaxNameAttribute.GetSyntax(typeof(LiquidExpression));
+        public string Syntax => SyntaxNameAttribute.GetSyntax(typeof(LiquidExpr));
 
         public LiquidExpressionEvaluator(
             ILiquidTemplateManager liquidTemplateManager,
-            IEnumerable<IWorkflowExecutionContextHandler> workflowContextHandlers,
+            IEnumerable<IWorkflowExecutionEventHandler> workflowContextHandlers,
             ILogger<JavaScriptExpressionEvaluator> logger)
         {
             _liquidTemplateManager = liquidTemplateManager;

@@ -135,7 +135,7 @@ namespace System.Collections.Generic
 
             foreach (var item in source)
             {
-                var key = Char.ToUpper(item.Key[0]) + item.Key.Substring(1);
+                var key = char.ToUpper(item.Key[0]) + item.Key.Substring(1);
                 var targetProperty = someObjectType.GetProperty(key);
 
                 if (targetProperty != null)

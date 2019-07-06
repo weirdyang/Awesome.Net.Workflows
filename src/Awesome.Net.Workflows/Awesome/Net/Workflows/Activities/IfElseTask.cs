@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Awesome.Net.Workflows.Contexts;
 using Awesome.Net.Workflows.Expressions;
-using Awesome.Net.Workflows.Expressions.Syntaxs;
 using Awesome.Net.Workflows.Models;
 using Microsoft.Extensions.Localization;
 
@@ -16,9 +15,9 @@ namespace Awesome.Net.Workflows.Activities
         /// <summary>
         /// A script evaluating to either true or false.
         /// </summary>
-        public IWorkflowExpression<bool> Condition
+        public WorkflowExpression<bool> Condition
         {
-            get => GetProperty(() => new JavaScriptExpression<bool>());
+            get => GetExpressionProperty<bool>();
             set => SetProperty(value);
         }
 

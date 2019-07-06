@@ -3,7 +3,7 @@ using Awesome.Net.Workflows.Contexts;
 
 namespace Awesome.Net.Workflows.Handlers
 {
-    public interface IWorkflowHandler
+    public interface IWorkflowPersistenceHandler
     {
         Task CreatedAsync(WorkflowCreatedContext context);
         Task UpdatedAsync(WorkflowUpdatedContext context);

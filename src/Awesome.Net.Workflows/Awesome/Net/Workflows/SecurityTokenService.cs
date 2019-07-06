@@ -7,9 +7,11 @@ namespace Awesome.Net.Workflows
     public class SecurityTokenService : ISecurityTokenService
     {
         private readonly ITimeLimitedDataProtector _dataProtector;
+        private readonly IDateTimeProvider _dateTimeProvider;
 
-        public SecurityTokenService(IDataProtectionProvider dataProtectionProvider)
+        public SecurityTokenService(IDataProtectionProvider dataProtectionProvider, IDateTimeProvider dateTimeProvider)
         {
+            _dateTimeProvider = dateTimeProvider;
             _dataProtector = dataProtectionProvider.CreateProtector("Tokens").ToTimeLimitedDataProtector();
         }
 
@@ -17,7 +19,7 @@ namespace Awesome.Net.Workflows
         {
             var json = JsonConvert.SerializeObject(payload);
 
-            return _dataProtector.Protect(json, DateTimeOffset.UtcNow.Add(lifetime));
+            return _dataProtector.Protect(json, _dateTimeProvider.Now.Add(lifetime));
         }
 
         public bool TryDecryptToken<T>(string token, out T payload)
@@ -28,7 +30,7 @@ namespace Awesome.Net.Workflows
             {
                 var json = _dataProtector.Unprotect(token, out var expiration);
 
-                if (DateTimeOffset.UtcNow < expiration.ToUniversalTime())
+                if (_dateTimeProvider.Now < expiration.ToUniversalTime())
                 {
                     payload = JsonConvert.DeserializeObject<T>(json);
                     return true;

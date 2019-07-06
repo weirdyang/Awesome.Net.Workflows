@@ -1,4 +1,4 @@
-﻿namespace Awesome.Net.Scripting
+namespace Awesome.Net.Scripting.Engines
 {
     public interface IScriptingScope
     {

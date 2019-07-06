@@ -1,3 +1,5 @@
+using System;
+using System.Linq;
 using Awesome.Net.Liquid;
 using Awesome.Net.Scripting;
 using Awesome.Net.Workflows.Activities;
@@ -10,48 +12,76 @@ namespace Awesome.Net.Workflows
 {
     public static class Startup
     {
-        public static IServiceCollection ConfigureWorkflows(this IServiceCollection services)
+        public static IServiceCollection AddWorkflow(this IServiceCollection services,
+            Action<WorkflowOptions> setupAction = null)
         {
-            services.ConfigureLiquid();
-            services.ConfigureScripting();
+            if (services.Any(x => x.ServiceType == typeof(WorkflowOptions)))
+            {
+                throw new InvalidOperationException("Workflow services already registered");
+            }
+
+            var options = new WorkflowOptions(services);
+            setupAction?.Invoke(options);
+            options.AddDefaultWorkflowActivities();
+            services.AddSingleton(options);
+
+            services.AddLiquid();
+            services.AddScripting();
+
+            services.AddTransient<IActivityLibrary, ActivityLibrary>();
+            services.AddTransient<IWorkflowTypeStore, MemoryWorkflowTypeStore>();
+            services.AddTransient<IWorkflowStore, MemoryWorkflowStore>();
+            services.AddTransient<IWorkflowManager, WorkflowManager>();
+            services.AddTransient<IDateTimeProvider, DateTimeProvider>();
 
             services.AddSingleton<ISecurityTokenService, SecurityTokenService>();
-            services.AddScoped<IActivityLibrary, ActivityLibrary>();
-            services.AddScoped<IWorkflowTypeStore, MemoryWorkflowTypeStore>();
-            services.AddScoped<IWorkflowStore, MemoryWorkflowStore>();
-            services.AddScoped<IWorkflowManager, WorkflowManager>();
-            services.AddWorkflowExecutionContextHandler<DefaultWorkflowExecutionContextHandler>();
+            services.AddSingleton<WorkflowExpressionEvaluator, WorkflowExpressionEvaluator>();
+            services.AddSingleton<IExpressionEvaluator, JavaScriptExpressionEvaluator>();
+            services.AddSingleton<IExpressionEvaluator, LiquidExpressionEvaluator>();
 
-            services.AddScoped<IWorkflowExpressionEvaluator, WorkflowExpressionEvaluator>();
-            services.AddScoped<IExpressionEvaluator, JavaScriptExpressionEvaluator>();
-            services.AddScoped<IExpressionEvaluator, LiquidExpressionEvaluator>();
-
-            services.AddDefaultWorkflowActivities();
+            services.RegisterWorkflowExecutionEventHandler<DefaultWorkflowExecutionEventHandler>();
 
             return services;
         }
 
-        public static IServiceCollection AddWorkflowExecutionContextHandler<T>(this IServiceCollection services)
-            where T : class, IWorkflowExecutionContextHandler
+        public static IServiceCollection RegisterWorkflowExecutionEventHandler<T>(this IServiceCollection services)
+            where T : class, IWorkflowExecutionEventHandler
         {
-            services.AddScoped<IWorkflowExecutionContextHandler, T>();
+            services.AddSingleton<IWorkflowExecutionEventHandler, T>();
             return services;
         }
 
-        private static void AddDefaultWorkflowActivities(this IServiceCollection services)
+        public static IServiceCollection RegisterWorkflowPersistenceHandler<T>(this IServiceCollection services)
+            where T : class, IWorkflowPersistenceHandler
         {
-            services.AddWorkflowActivity<CorrelateTask>()
-                .AddWorkflowActivity<LogTask>()
-                .AddWorkflowActivity<SetOutputTask>()
-                .AddWorkflowActivity<SetPropertyTask>()
-                .AddWorkflowActivity<MissingActivity>();
+            services.AddSingleton<IWorkflowPersistenceHandler, T>();
+            return services;
+        }
 
-            services.AddWorkflowActivity<IfElseTask>()
-                .AddWorkflowActivity<ForEachTask>()
-                .AddWorkflowActivity<ForkTask>()
-                .AddWorkflowActivity<JoinTask>()
-                .AddWorkflowActivity<ScriptTask>()
-                .AddWorkflowActivity<WhileLoopTask>();
+        public static IServiceCollection
+            RegisterWorkflowTypePersistenceEventHandler<T>(this IServiceCollection services)
+            where T : class, IWorkflowTypePersistenceEventHandler
+        {
+            services.AddSingleton<IWorkflowTypePersistenceEventHandler, T>();
+            return services;
+        }
+
+        private static void AddDefaultWorkflowActivities(this WorkflowOptions options)
+        {
+            // Primitives
+            options.RegisterActivity<CorrelateTask>()
+                .RegisterActivity<LogTask>()
+                .RegisterActivity<SetOutputTask>()
+                .RegisterActivity<SetPropertyTask>()
+                .RegisterActivity<MissingActivity>();
+
+            // Control Flow
+            options.RegisterActivity<IfElseTask>()
+                .RegisterActivity<ForEachTask>()
+                .RegisterActivity<ForkTask>()
+                .RegisterActivity<JoinTask>()
+                .RegisterActivity<ScriptTask>()
+                .RegisterActivity<WhileLoopTask>();
         }
     }
 }

@@ -1,17 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Awesome.Net.Workflows.Handlers;
 using Awesome.Net.Workflows.Models;
-using Microsoft.Extensions.Logging;
 
 namespace Awesome.Net.Workflows.Contexts
 {
     public class WorkflowExecutionContext
     {
-        private readonly IEnumerable<IWorkflowExecutionContextHandler> _handlers;
-        private readonly ILogger<WorkflowExecutionContext> _logger;
-
         public WorkflowExecutionContext
         (
             WorkflowType workflowType,
@@ -21,14 +16,9 @@ namespace Awesome.Net.Workflows.Contexts
             IDictionary<string, object> properties,
             IList<ExecutedActivity> executedActivities,
             object lastResult,
-            IEnumerable<ActivityExecutionContext> activities,
-            IEnumerable<IWorkflowExecutionContextHandler> handlers,
-            ILogger<WorkflowExecutionContext> logger
+            IEnumerable<ActivityExecutionContext> activities
         )
         {
-            _handlers = handlers;
-            _logger = logger;
-
             Input = input ?? new Dictionary<string, object>();
             Output = output ?? new Dictionary<string, object>();
             Properties = properties ?? new Dictionary<string, object>();
@@ -36,7 +26,7 @@ namespace Awesome.Net.Workflows.Contexts
             LastResult = lastResult;
             WorkflowType = workflowType;
             Workflow = workflow;
-            Activities = activities.ToDictionary(x => x.ActivityRecord.ActivityId);
+            Activities = activities.ToDictionary(x => x.ActivityRecord.Id);
         }
 
         public Workflow Workflow { get; }

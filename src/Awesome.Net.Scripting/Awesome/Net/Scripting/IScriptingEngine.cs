@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Awesome.Net.Scripting.Engines;
 using Microsoft.Extensions.FileProviders;
 
 namespace Awesome.Net.Scripting

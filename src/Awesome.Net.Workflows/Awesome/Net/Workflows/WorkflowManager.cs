@@ -5,9 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Awesome.Net.Workflows.Activities;
 using Awesome.Net.Workflows.Contexts;
-using Awesome.Net.Workflows.Handlers;
 using Awesome.Net.Workflows.Models;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 
@@ -15,13 +13,12 @@ namespace Awesome.Net.Workflows
 {
     public class WorkflowManager : IWorkflowManager
     {
-        private readonly IServiceProvider _serviceProvider;
+        public IServiceProvider ServiceProvide { get; }
         private readonly IActivityLibrary _activityLibrary;
         private readonly IWorkflowTypeStore _workflowTypeStore;
         private readonly IWorkflowStore _workflowStore;
-        private readonly IEnumerable<IWorkflowExecutionContextHandler> _workflowContextHandlers;
         private readonly ILogger<WorkflowManager> _logger;
-        private readonly ILogger<WorkflowExecutionContext> _workflowContextLogger;
+        private readonly IDateTimeProvider _dateTimeProvider;
 
         public WorkflowManager
         (
@@ -30,16 +27,14 @@ namespace Awesome.Net.Workflows
             IWorkflowStore workflowRepository,
             ILogger<WorkflowManager> logger,
             IServiceProvider serviceProvider,
-            ILogger<WorkflowExecutionContext> workflowContextLogger)
+            IDateTimeProvider dateTimeProvider)
         {
             _activityLibrary = activityLibrary;
             _workflowTypeStore = workflowTypeRepository;
             _workflowStore = workflowRepository;
             _logger = logger;
-            _serviceProvider = serviceProvider;
-            _workflowContextLogger = workflowContextLogger;
-
-            _workflowContextHandlers = _serviceProvider.GetService<IEnumerable<IWorkflowExecutionContextHandler>>();
+            ServiceProvide = serviceProvider;
+            _dateTimeProvider = dateTimeProvider;
         }
 
         public Workflow NewWorkflow(WorkflowType workflowType, string correlationId = null)
@@ -51,13 +46,13 @@ namespace Awesome.Net.Workflows
                 State = JObject.FromObject(new WorkflowState
                 {
                     ActivityStates = workflowType.Activities.Select(x => x)
-                        .ToDictionary(x => x.ActivityId, x => x.Properties)
+                        .ToDictionary(x => x.Id, x => x.Properties)
                 }),
                 CorrelationId = correlationId,
-                CreatedUtc = DateTime.UtcNow
+                CreatedUtc = _dateTimeProvider.Now,
+                WorkflowId = RandomHelper.Generate26UniqueId()
             };
 
-            workflow.WorkflowId = Guid.NewGuid().ToString("N");
             return workflow;
         }
 
@@ -67,8 +62,8 @@ namespace Awesome.Net.Workflows
             var state = workflow.State.ToObject<WorkflowState>();
             var activityQuery = await Task.WhenAll(workflowType.Activities.Select(async x =>
             {
-                var activityState = state.ActivityStates.ContainsKey(x.ActivityId)
-                    ? state.ActivityStates[x.ActivityId]
+                var activityState = state.ActivityStates.ContainsKey(x.Id)
+                    ? state.ActivityStates[x.Id]
                     : new JObject();
                 return await CreateActivityExecutionContextAsync(x, activityState);
             }));
@@ -85,22 +80,20 @@ namespace Awesome.Net.Workflows
                 properties,
                 executedActivities,
                 lastResult,
-                activityQuery,
-                _workflowContextHandlers,
-                _workflowContextLogger);
+                activityQuery);
         }
 
         public Task<ActivityExecutionContext> CreateActivityExecutionContextAsync(ActivityRecord activityRecord,
             JObject properties)
         {
-            var activity = _activityLibrary.InstantiateActivity<IActivity>(activityRecord.Name, properties);
+            var activity = _activityLibrary.InstantiateActivity<IActivity>(activityRecord.TypeName, properties);
 
             if (activity == null)
             {
                 _logger.LogWarning(
-                    "Requested activity '{ActivityName}' does not exist in the library. This could indicate a changed name or a missing feature. Replacing it with MissingActivity.",
-                    activityRecord.Name);
-                activity = new MissingActivity(_serviceProvider, activityRecord);
+                    "Requested activity '{ActivityName}' does not exist in the library. This could indicate a changed typeName or a missing feature. Replacing it with MissingActivity.",
+                    activityRecord.TypeName);
+                activity = new MissingActivity(ServiceProvide, activityRecord);
             }
 
             var context = new ActivityExecutionContext {ActivityRecord = activityRecord, Activity = activity};
@@ -108,22 +101,22 @@ namespace Awesome.Net.Workflows
             return Task.FromResult(context);
         }
 
-        public async Task TriggerEventAsync(string name, IDictionary<string, object> input = null,
+        public async Task TriggerEventAsync(string typeName, IDictionary<string, object> input = null,
             string correlationId = null)
         {
-            var activity = _activityLibrary.GetActivityByName(name);
+            var activity = _activityLibrary.GetActivityByName(typeName);
 
             if (activity == null)
             {
-                _logger.LogError("Activity '{ActivityName}' was not found", name);
+                _logger.LogError("Activity '{ActivityName}' was not found", typeName);
                 return;
             }
 
             // Look for workflow types with a corresponding starting activity.
-            var workflowTypesToStart = await _workflowTypeStore.GetByStartActivityAsync(name);
+            var workflowTypesToStart = await _workflowTypeStore.GetByStartActivityAsync(typeName);
 
             // And any workflow halted on this kind of activity for the specified target.
-            var haltedWorkflows = await _workflowStore.ListByActivityNameAsync(name, correlationId);
+            var haltedWorkflows = await _workflowStore.ListByActivityNameAsync(typeName, correlationId);
 
             // If no workflow matches the event, do nothing.
             if (!workflowTypesToStart.Any() && !haltedWorkflows.Any())
@@ -142,7 +135,7 @@ namespace Awesome.Net.Workflows
                 }
 
                 var startActivity = workflowType.Activities.FirstOrDefault(x =>
-                    x.IsStart && string.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase));
+                    x.IsStart && string.Equals(x.TypeName, typeName, StringComparison.OrdinalIgnoreCase));
 
                 if (startActivity != null)
                 {
@@ -153,7 +146,7 @@ namespace Awesome.Net.Workflows
             // Resume halted workflows.
             foreach (var workflow in haltedWorkflows)
             {
-                var blockingActivities = workflow.BlockingActivities.Where(x => x.Name == name).ToList();
+                var blockingActivities = workflow.BlockingActivities.Where(x => x.Name == typeName).ToList();
 
                 foreach (var blockingActivity in blockingActivities)
                 {
@@ -167,7 +160,7 @@ namespace Awesome.Net.Workflows
         {
             var workflowType = await _workflowTypeStore.GetAsync(workflow.WorkflowTypeId);
             var activityRecord =
-                workflowType.Activities.SingleOrDefault(x => x.ActivityId == awaitingActivity.ActivityId);
+                workflowType.Activities.SingleOrDefault(x => x.Id == awaitingActivity.Id);
             var workflowContext = await CreateWorkflowExecutionContextAsync(workflowType, workflow, input);
 
             workflowContext.Status = WorkflowStatus.Resuming;
@@ -189,7 +182,7 @@ namespace Awesome.Net.Workflows
                 // Check if the current activity can execute.
                 if (activityRecord != null)
                 {
-                    var activityContext = workflowContext.GetActivity(activityRecord.ActivityId);
+                    var activityContext = workflowContext.GetActivity(activityRecord.Id);
                     if (await activityContext.Activity.CanExecuteAsync(workflowContext, activityContext))
                     {
                         // Signal every activity that the workflow is resumed.
@@ -260,7 +253,7 @@ namespace Awesome.Net.Workflows
             else
             {
                 // Check if the current activity can execute.
-                var activityContext = workflowContext.GetActivity(startActivity.ActivityId);
+                var activityContext = workflowContext.GetActivity(startActivity.Id);
                 if (await activityContext.Activity.CanExecuteAsync(workflowContext, activityContext))
                 {
                     // Signal every activity that the workflow has started.
@@ -302,7 +295,7 @@ namespace Awesome.Net.Workflows
             {
                 activity = scheduled.Pop();
 
-                var activityContext = workflowContext.GetActivity(activity.ActivityId);
+                var activityContext = workflowContext.GetActivity(activity.Id);
 
                 // Signal every activity that the activity is about to be executed.
                 var cancellationToken = new CancellationToken();
@@ -364,9 +357,9 @@ namespace Awesome.Net.Workflows
                 catch (Exception ex)
                 {
                     _logger.LogError(ex,
-                        "An unhandled error occurred while executing an activity. Workflow ID: '{WorkflowTypeId}'. Activity: '{ActivityId}', '{ActivityName}'. Putting the workflow in the faulted state.",
-                        workflowType.Id, activityContext.ActivityRecord.ActivityId,
-                        activityContext.ActivityRecord.Name);
+                        "An unhandled error occurred while executing an activity. Workflow ID: '{WorkflowTypeId}'. Activity: '{Id}', '{ActivityName}'. Putting the workflow in the faulted state.",
+                        workflowType.Id, activityContext.ActivityRecord.Id,
+                        activityContext.ActivityRecord.TypeName);
                     workflowContext.Fault(ex, activityContext);
                     return blocking.Distinct();
                 }
@@ -379,13 +372,13 @@ namespace Awesome.Net.Workflows
                 {
                     // Look for next activity in the graph.
                     var transition = workflowType.Transitions.FirstOrDefault(x =>
-                        x.SourceActivityId == activity.ActivityId && x.SourceOutcomeName == outcome);
+                        x.SourceActivityId == activity.Id && x.SourceOutcomeName == outcome);
 
                     if (transition != null)
                     {
                         var destinationActivity =
                             workflowContext.WorkflowType.Activities.SingleOrDefault(x =>
-                                x.ActivityId == transition.DestinationActivityId);
+                                x.Id == transition.DestinationActivityId);
                         scheduled.Push(destinationActivity);
                     }
                 }
@@ -403,7 +396,7 @@ namespace Awesome.Net.Workflows
             foreach (var blockingActivity in blockingActivities)
             {
                 // Workflows containing event activities could end up being blocked on the same activity.
-                if (workflowContext.Workflow.BlockingActivities.All(x => x.ActivityId != blockingActivity.ActivityId))
+                if (workflowContext.Workflow.BlockingActivities.All(x => x.Id != blockingActivity.Id))
                 {
                     workflowContext.Workflow.BlockingActivities.Add(BlockingActivity.FromActivity(blockingActivity));
                 }

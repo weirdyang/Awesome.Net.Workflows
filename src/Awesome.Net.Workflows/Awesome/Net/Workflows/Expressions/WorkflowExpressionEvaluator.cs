@@ -22,7 +22,7 @@ namespace Awesome.Net.Workflows.Expressions
             _logger = logger;
         }
 
-        public async Task<T> EvaluateAsync<T>(IWorkflowExpression<T> expression,
+        public async Task<T> EvaluateAsync<T>(WorkflowExpression<T> expression,
             WorkflowExecutionContext workflowContext,
             IDictionary<string, object> arguments = null,
             CancellationToken cancellationToken = default)

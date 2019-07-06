@@ -10,9 +10,9 @@
 //    public class NotifyTask : TaskActivity
 //    {
 //        private readonly INotifier _notifier;
-//        private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
+//        private readonly WorkflowExpressionEvaluator _expressionEvaluator;
 
-//        public NotifyTask(INotifier notifier, IWorkflowExpressionEvaluator expressionvaluator)
+//        public NotifyTask(INotifier notifier, WorkflowExpressionEvaluator expressionvaluator)
 //        {
 //            _notifier = notifier;
 //            _expressionEvaluator = expressionvaluator;
@@ -46,5 +46,6 @@
 //        }
 //    }
 //}
+
 
 

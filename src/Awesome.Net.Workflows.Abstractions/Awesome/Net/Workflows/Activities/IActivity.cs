@@ -10,7 +10,7 @@ namespace Awesome.Net.Workflows.Activities
 {
     public interface IActivity
     {
-        string Name { get; }
+        string TypeName { get; }
         LocalizedString Category { get; }
         JObject Properties { get; set; }
         bool HasEditor { get; }

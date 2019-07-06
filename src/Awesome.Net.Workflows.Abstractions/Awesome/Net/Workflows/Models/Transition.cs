@@ -1,3 +1,5 @@
+using System;
+
 namespace Awesome.Net.Workflows.Models
 {
     /// <summary>
@@ -5,10 +7,10 @@ namespace Awesome.Net.Workflows.Models
     /// </summary>
     public class Transition
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
         /// <summary>
-        /// The source <see cref="ActivityRecord.ActivityId"/>
+        /// The source <see cref="ActivityRecord.Id"/>
         /// </summary>
         public string SourceActivityId { get; set; }
 
@@ -18,7 +20,7 @@ namespace Awesome.Net.Workflows.Models
         public string SourceOutcomeName { get; set; }
 
         /// <summary>
-        /// The destination <see cref="ActivityRecord.ActivityId"/>
+        /// The destination <see cref="ActivityRecord.Id"/>
         /// </summary>
         public string DestinationActivityId { get; set; }
     }

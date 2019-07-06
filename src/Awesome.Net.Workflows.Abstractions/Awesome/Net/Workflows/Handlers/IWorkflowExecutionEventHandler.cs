@@ -3,7 +3,7 @@ using Awesome.Net.Workflows.Contexts;
 
 namespace Awesome.Net.Workflows.Handlers
 {
-    public interface IWorkflowExecutionContextHandler
+    public interface IWorkflowExecutionEventHandler
     {
         Task EvaluatingLiquidAsync(WorkflowExecutionLiquidContext context);
         Task EvaluatingScriptAsync(WorkflowExecutionScriptContext context);

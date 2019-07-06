@@ -10,7 +10,7 @@ namespace Awesome.Net.Workflows.Expressions
     {
         IEnumerable<IExpressionEvaluator> Evaluators { get; }
 
-        Task<T> EvaluateAsync<T>(IWorkflowExpression<T> workflowExpression,
+        Task<T> EvaluateAsync<T>(WorkflowExpression<T> workflowExpression,
             WorkflowExecutionContext workflowContext, IDictionary<string, object> arguments = null,
             CancellationToken cancellationToken = default);
     }

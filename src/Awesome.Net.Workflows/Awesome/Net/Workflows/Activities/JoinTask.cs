@@ -40,7 +40,7 @@ namespace Awesome.Net.Workflows.Activities
             ActivityExecutionContext activityContext)
         {
             var branches = Branches;
-            var inboundTransitions = workflowContext.GetInboundTransitions(activityContext.ActivityRecord.ActivityId);
+            var inboundTransitions = workflowContext.GetInboundTransitions(activityContext.ActivityRecord.Id);
             var done = false;
 
             switch (Mode)
@@ -55,9 +55,9 @@ namespace Awesome.Net.Workflows.Activities
                     {
                         // Remove any inbound blocking activities.
                         var ancestorActivityIds = workflowContext
-                            .GetInboundActivityPath(activityContext.ActivityRecord.ActivityId).ToList();
+                            .GetInboundActivityPath(activityContext.ActivityRecord.Id).ToList();
                         var blockingActivities = workflowContext.Workflow.BlockingActivities
-                            .Where(x => ancestorActivityIds.Contains(x.ActivityId)).ToList();
+                            .Where(x => ancestorActivityIds.Contains(x.Id)).ToList();
 
                         foreach (var blockingActivity in blockingActivities)
                         {
@@ -80,13 +80,13 @@ namespace Awesome.Net.Workflows.Activities
             ActivityExecutionContext activityContext)
         {
             // Get outbound transitions of the executing activity.
-            var outboundTransitions = workflowContext.GetOutboundTransitions(activityContext.ActivityRecord.ActivityId);
+            var outboundTransitions = workflowContext.GetOutboundTransitions(activityContext.ActivityRecord.Id);
 
             // Get any transition that is pointing to this activity.
             var inboundTransitionsQuery =
                 from transition in outboundTransitions
                 let destinationActivity = workflowContext.GetActivity(transition.DestinationActivityId)
-                where destinationActivity.Activity.Name == Name
+                where destinationActivity.Activity.TypeName == TypeName
                 select transition;
 
             var inboundTransitions = inboundTransitionsQuery.ToList();

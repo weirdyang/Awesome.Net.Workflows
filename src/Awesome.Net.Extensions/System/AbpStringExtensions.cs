@@ -275,7 +275,7 @@ namespace System
                 return useCurrentCulture ? str.ToLower() : str.ToLowerInvariant();
             }
 
-            return (useCurrentCulture ? Char.ToLower(str[0]) : Char.ToLowerInvariant(str[0])) + str.Substring(1);
+            return (useCurrentCulture ? char.ToLower(str[0]) : char.ToLowerInvariant(str[0])) + str.Substring(1);
         }
 
         /// <summary>
@@ -292,8 +292,8 @@ namespace System
             }
 
             return useCurrentCulture
-                ? Regex.Replace(str, "[a-z][A-Z]", m => m.Value[0] + separator + Char.ToLower(m.Value[1]))
-                : Regex.Replace(str, "[a-z][A-Z]", m => m.Value[0] + separator + Char.ToLowerInvariant(m.Value[1]));
+                ? Regex.Replace(str, "[a-z][A-Z]", m => m.Value[0] + separator + char.ToLower(m.Value[1]))
+                : Regex.Replace(str, "[a-z][A-Z]", m => m.Value[0] + separator + char.ToLowerInvariant(m.Value[1]));
         }
 
         /// <summary>
@@ -360,7 +360,7 @@ namespace System
                 return useCurrentCulture ? str.ToUpper() : str.ToUpperInvariant();
             }
 
-            return (useCurrentCulture ? Char.ToUpper(str[0]) : Char.ToUpperInvariant(str[0])) + str.Substring(1);
+            return (useCurrentCulture ? char.ToUpper(str[0]) : char.ToUpperInvariant(str[0])) + str.Substring(1);
         }
 
         /// <summary>

@@ -27,7 +27,7 @@ namespace Awesome.Net.Workflows.Activities
         {
             Logger.LogWarning(
                 "Activity '{ActivityName}' is no longer available. This can happen if the feature providing the activity is no longer enabled. Either enable the feature, or remove this activity from workflow definition with ID {WorkflowTypeId}",
-                MissingActivityRecord.Name, workflowContext.WorkflowType.Id);
+                MissingActivityRecord.TypeName, workflowContext.WorkflowType.Id);
             return Noop();
         }
 

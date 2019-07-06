@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Awesome.Net.Workflows.Contexts;
 using Awesome.Net.Workflows.Expressions;
-using Awesome.Net.Workflows.Expressions.Syntaxs;
 using Awesome.Net.Workflows.Models;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -20,9 +19,9 @@ namespace Awesome.Net.Workflows.Activities
             set => SetProperty(value);
         }
 
-        public IWorkflowExpression<string> Text
+        public WorkflowExpression<string> Text
         {
-            get => GetProperty(() => new LiquidExpression());
+            get => GetExpressionProperty<string>();
             set => SetProperty(value);
         }
 

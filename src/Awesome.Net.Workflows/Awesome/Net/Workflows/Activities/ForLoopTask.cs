@@ -16,27 +16,27 @@ namespace Awesome.Net.Workflows.Activities
         /// <summary>
         /// An workflowExpression evaluating to the start value.
         /// </summary>
-        public IWorkflowExpression<double> From
+        public WorkflowExpression<double> From
         {
-            get => GetProperty(() => new JavaScriptExpression<double>("0"));
+            get => GetExpressionProperty(new JavaScriptExpr<double>("0"));
             set => SetProperty(value);
         }
 
         /// <summary>
         /// An workflowExpression evaluating to the end value.
         /// </summary>
-        public IWorkflowExpression<double> To
+        public WorkflowExpression<double> To
         {
-            get => GetProperty(() => new JavaScriptExpression<double>("10"));
+            get => GetExpressionProperty(new JavaScriptExpr<double>("10"));
             set => SetProperty(value);
         }
 
         /// <summary>
         /// An workflowExpression evaluating to the end value.
         /// </summary>
-        public IWorkflowExpression<double> Step
+        public WorkflowExpression<double> Step
         {
-            get => GetProperty(() => new JavaScriptExpression<double>("1"));
+            get => GetExpressionProperty(new JavaScriptExpr<double>("1"));
             set => SetProperty(value);
         }
 
@@ -67,17 +67,17 @@ namespace Awesome.Net.Workflows.Activities
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext,
             ActivityExecutionContext activityContext)
         {
-            if (!Double.TryParse(From.Expression, out var from))
+            if (!double.TryParse(From.Expression, out var from))
             {
                 from = await ExpressionEvaluator.EvaluateAsync(From, workflowContext);
             }
 
-            if (!Double.TryParse(To.Expression, out var to))
+            if (!double.TryParse(To.Expression, out var to))
             {
                 to = await ExpressionEvaluator.EvaluateAsync(To, workflowContext);
             }
 
-            if (!Double.TryParse(Step.Expression, out var step))
+            if (!double.TryParse(Step.Expression, out var step))
             {
                 step = await ExpressionEvaluator.EvaluateAsync(Step, workflowContext);
             }

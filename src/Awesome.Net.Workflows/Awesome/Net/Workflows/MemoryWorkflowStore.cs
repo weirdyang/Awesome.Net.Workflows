@@ -14,10 +14,11 @@ namespace Awesome.Net.Workflows
     public class MemoryWorkflowStore : IWorkflowStore
     {
         protected readonly ConcurrentDictionary<Guid, Workflow> Query;
-        private readonly IEnumerable<IWorkflowHandler> _handlers;
+        private readonly IEnumerable<IWorkflowPersistenceHandler> _handlers;
         private readonly ILogger<MemoryWorkflowStore> _logger;
 
-        public MemoryWorkflowStore(IEnumerable<IWorkflowHandler> handlers, ILogger<MemoryWorkflowStore> logger)
+        public MemoryWorkflowStore(IEnumerable<IWorkflowPersistenceHandler> handlers,
+            ILogger<MemoryWorkflowStore> logger)
         {
             _handlers = handlers;
             _logger = logger;
@@ -106,7 +107,7 @@ namespace Awesome.Net.Workflows
             var blockingActivityIdList = blockingActivityIds.ToList();
             var query = Query.Select(x => x.Value).Where(
                 x => x.WorkflowTypeId == workflowTypeId);
-            query = query.Where(x => x.BlockingActivities.Any(a => blockingActivityIdList.Contains(a.ActivityId)));
+            query = query.Where(x => x.BlockingActivities.Any(a => blockingActivityIdList.Contains(a.Id)));
             return Task.FromResult(query);
         }
 

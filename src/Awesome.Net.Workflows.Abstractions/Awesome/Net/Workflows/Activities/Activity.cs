@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -34,7 +33,7 @@ namespace Awesome.Net.Workflows.Activities
         private IStringLocalizer _localizer;
         protected IStringLocalizer T => LazyGetRequiredService(ref _localizer);
 
-        public virtual string Name => GetType().Name;
+        public virtual string TypeName => GetType().Name;
         public abstract LocalizedString Category { get; }
         public virtual JObject Properties { get; set; }
 
@@ -165,11 +164,11 @@ namespace Awesome.Net.Workflows.Activities
             return item != null ? item.ToObject<T>() : defaultValue != null ? defaultValue() : default;
         }
 
-        protected virtual T GetProperty<T>(Type type, Func<T> defaultValue = null,
-            [CallerMemberName] string name = null)
+        protected virtual WorkflowExpression<TReturn> GetExpressionProperty<TReturn>(
+            WorkflowExpression<TReturn> defaultValue = default, [CallerMemberName] string name = null)
         {
             var item = Properties[name];
-            return item != null ? (T) item.ToObject(type) : defaultValue != null ? defaultValue() : default;
+            return item != null ? item.ToObject<WorkflowExpression<TReturn>>() : defaultValue;
         }
 
         protected virtual void SetProperty(object value, [CallerMemberName] string name = null)

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Awesome.Net.Workflows.Contexts;
 using Awesome.Net.Workflows.Expressions;
-using Awesome.Net.Workflows.Expressions.Syntaxs;
 using Awesome.Net.Workflows.Models;
 using Microsoft.Extensions.Localization;
 
@@ -19,9 +18,9 @@ namespace Awesome.Net.Workflows.Activities
             set => SetProperty(value);
         }
 
-        public IWorkflowExpression<object> Value
+        public WorkflowExpression<object> Value
         {
-            get => GetProperty(() => new JavaScriptExpression<object>());
+            get => GetExpressionProperty<object>();
             set => SetProperty(value);
         }
 
