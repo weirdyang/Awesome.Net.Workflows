@@ -30,13 +30,12 @@ namespace Awesome.Net.Workflows
             services.AddScripting();
 
             services.AddTransient<IActivityLibrary, ActivityLibrary>();
-            services.AddTransient<IWorkflowTypeStore, MemoryWorkflowTypeStore>();
-            services.AddTransient<IWorkflowStore, MemoryWorkflowStore>();
             services.AddTransient<IWorkflowManager, WorkflowManager>();
             services.AddTransient<IDateTimeProvider, DateTimeProvider>();
-
             services.AddTransient<IWorkflowBuilder, WorkflowBuilder>();
-
+            
+            services.AddSingleton<IWorkflowTypeStore, MemoryWorkflowTypeStore>();
+            services.AddSingleton<IWorkflowStore, MemoryWorkflowStore>();
             services.AddSingleton<ISecurityTokenService, SecurityTokenService>();
             services.AddSingleton<WorkflowExpressionEvaluator, WorkflowExpressionEvaluator>();
             services.AddSingleton<IExpressionEvaluator, JavaScriptExpressionEvaluator>();
@@ -61,8 +60,7 @@ namespace Awesome.Net.Workflows
             return services;
         }
 
-        public static IServiceCollection
-            RegisterWorkflowTypePersistenceEventHandler<T>(this IServiceCollection services)
+        public static IServiceCollection RegisterWorkflowTypePersistenceEventHandler<T>(this IServiceCollection services)
             where T : class, IWorkflowTypePersistenceEventHandler
         {
             services.AddSingleton<IWorkflowTypePersistenceEventHandler, T>();
