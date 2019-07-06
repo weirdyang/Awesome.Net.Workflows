@@ -37,7 +37,7 @@ namespace Awesome.Net.Workflows
             services.AddSingleton<IWorkflowTypeStore, MemoryWorkflowTypeStore>();
             services.AddSingleton<IWorkflowStore, MemoryWorkflowStore>();
             services.AddSingleton<ISecurityTokenService, SecurityTokenService>();
-            services.AddSingleton<WorkflowExpressionEvaluator, WorkflowExpressionEvaluator>();
+            services.AddSingleton<IWorkflowExpressionEvaluator, WorkflowExpressionEvaluator>();
             services.AddSingleton<IExpressionEvaluator, JavaScriptExpressionEvaluator>();
             services.AddSingleton<IExpressionEvaluator, LiquidExpressionEvaluator>();
 
