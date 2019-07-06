@@ -5,6 +5,7 @@ using Awesome.Net.Scripting;
 using Awesome.Net.Workflows.Activities;
 using Awesome.Net.Workflows.Expressions;
 using Awesome.Net.Workflows.Expressions.Syntaxs;
+using Awesome.Net.Workflows.FluentBuilders;
 using Awesome.Net.Workflows.Handlers;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -33,6 +34,8 @@ namespace Awesome.Net.Workflows
             services.AddTransient<IWorkflowStore, MemoryWorkflowStore>();
             services.AddTransient<IWorkflowManager, WorkflowManager>();
             services.AddTransient<IDateTimeProvider, DateTimeProvider>();
+
+            services.AddTransient<IWorkflowBuilder, WorkflowBuilder>();
 
             services.AddSingleton<ISecurityTokenService, SecurityTokenService>();
             services.AddSingleton<WorkflowExpressionEvaluator, WorkflowExpressionEvaluator>();

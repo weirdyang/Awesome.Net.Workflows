@@ -11,11 +11,9 @@ namespace Awesome.Net.Workflows.FluentBuilders
         List<ActivityRecord> Activities { get; }
         List<Transition> Transitions { get; }
         IActivityBuilder StartWith<T>(Action<T> setup = null, string id = null) where T : IActivity;
-
         ActivityRecord BuildActivity<T>(T activity = default, Action<T> setup = null, string id = null,
             bool addToWorkflow = true)
             where T : IActivity;
-
         WorkflowType Build<T>() where T : IWorkflow, new();
         WorkflowType Build(IWorkflow workflow);
     }
