@@ -56,26 +56,47 @@ namespace Awesome.Net.Workflows.FluentBuilders
             return activityRecord;
         }
 
-        public WorkflowType Build<T>() where T : IWorkflow, new()
+        public WorkflowType Build<T>(Action<WorkflowType> setup = null) where T : IWorkflow, new()
         {
             var workflow = new T();
             workflow.Build(this);
-            return Build(workflow);
+            return Build(workflow, setup);
         }
 
-        public WorkflowType Build(IWorkflow workflow)
+        public WorkflowType Build(IWorkflow workflow, Action<WorkflowType> setup = null)
         {
+            var workflowType = Build(workflow.Name, x =>
+             {
+                 x.Id = workflow.Id;
+                 x.WorkflowTypeId = workflow.WorkflowTypeId;
+                 x.Name = workflow.Name;
+                 x.IsEnabled = workflow.IsEnabled;
+                 x.IsSingleton = workflow.IsSingleton;
+                 x.DeleteFinishedWorkflows = workflow.DeleteFinishedWorkflows;
+
+                 setup?.Invoke(x);
+             });
+
+            return workflowType;
+        }
+
+        public WorkflowType Build(string name, Action<WorkflowType> setup = null)
+        {
+            if (name == null) throw new ArgumentNullException(nameof(name));
+
             var workflowType = new WorkflowType()
             {
-                Id = workflow.Id,
-                WorkflowTypeId = workflow.WorkflowTypeId,
-                Name = workflow.Name,
-                IsEnabled = workflow.IsEnabled,
-                IsSingleton = workflow.IsSingleton,
-                DeleteFinishedWorkflows = workflow.DeleteFinishedWorkflows,
+                Id = Guid.NewGuid(),
+                WorkflowTypeId = RandomHelper.Generate26UniqueId(),
+                Name = name,
+                IsEnabled = true,
+                IsSingleton = false,
+                DeleteFinishedWorkflows = false,
                 Activities = Activities,
                 Transitions = CleanupTransitions()
             };
+
+            setup?.Invoke(workflowType);
 
             return workflowType;
         }

@@ -95,5 +95,10 @@ namespace Awesome.Net.Workflows.FluentBuilders
             var builder = new ParallelActivityBuilder(activityBuilder);
             return builder;
         }
+
+        public WorkflowType Build(string name, Action<WorkflowType> setup = null)
+        {
+            return WorkflowBuilder.Build(name, setup);
+        }
     }
 }

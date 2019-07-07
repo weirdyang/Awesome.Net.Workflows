@@ -5,7 +5,7 @@ namespace Awesome.Net.Workflows.FluentBuilders
     public interface IParallelActivityBuilder
     {
         IActivityBuilder ActivityBuilder { get; }
-        IParallelActivityBuilder Do(string branch, Action<IActivityBuilder> branchBuilder);
+        IParallelActivityBuilder Branch(Action<IActivityBuilder> branchBuilder, string branchName = null);
         IActivityBuilder Join(string id, bool waitAll = true);
     }
 }

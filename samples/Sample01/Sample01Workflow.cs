@@ -29,7 +29,7 @@ namespace Sample01
                     x.Text = new LiquidExpr("Value has set: {{Workflow.Properties['Value']}}"))
                 .Then<ConsoleWriteLineTask>(x => x.Text = new LiquidExpr("Then Fork"))
                 .Fork("fork1")
-                .Do("branch1", then => then.Then<ConsoleWriteLineTask>(log => log.Text = new LiquidExpr("Do branch1"))
+                .Branch(then => then.Then<ConsoleWriteLineTask>(log => log.Text = new LiquidExpr("Branch branch1"))
                     .Then<SetPropertyTask>(
                         x =>
                         {
@@ -65,11 +65,9 @@ namespace Sample01
                                     });
                         })
                 )
-                .Do("branch2",
-                    then => then.Then<ConsoleWriteLineTask>(x => x.Text = new LiquidExpr("Do branch2"))
+                .Branch(then => then.Then<ConsoleWriteLineTask>(x => x.Text = new LiquidExpr("Branch branch2"))
                         .Connect("fork1_join"))
-                .Do("branch3",
-                    then => then.Then<ConsoleWriteLineTask>(x => x.Text = new LiquidExpr("Do branch3"))
+                .Branch(then => then.Then<ConsoleWriteLineTask>(x => x.Text = new LiquidExpr("Branch branch3"))
                         .Connect("fork1_join"))
                 .Join("fork1_join", waitAll: false)
                 .Then<ConsoleWriteLineTask>(x => x.Text = new LiquidExpr("Joined"));

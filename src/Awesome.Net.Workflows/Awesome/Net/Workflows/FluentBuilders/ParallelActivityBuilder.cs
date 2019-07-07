@@ -15,29 +15,31 @@ namespace Awesome.Net.Workflows.FluentBuilders
             ActivityBuilder = activityBuilder;
         }
 
-        public IParallelActivityBuilder Do(string branch, Action<IActivityBuilder> branchBuilder)
+        public IParallelActivityBuilder Branch(Action<IActivityBuilder> branchBuilder, string branchName = null)
         {
-            if (branch == null) throw new ArgumentNullException(nameof(branch));
-
-            IList<string> branches;
+            var branches = new List<string>();
             if (ActivityBuilder.CurrentActivity.Properties.ContainsKey("Forks"))
             {
-                branches = ActivityBuilder.CurrentActivity.Properties["Forks"].ToObject<IList<string>>();
+                branches = ActivityBuilder.CurrentActivity.Properties["Forks"].ToObject<List<string>>();
+            }
 
-                if (branches.Any(x => x == branch))
-                {
-                    throw new ArgumentException($"Branch: {branch} already exists.", nameof(branch));
-                }
+            if (branchName.IsNullOrWhiteSpace())
+            {
+                branchName = $"Branch_{RandomHelper.Generate26UniqueId().Left(6)}";
             }
             else
             {
-                branches = new List<string>();
+                if (branches.Any(x => x == branchName))
+                {
+                    throw new ArgumentException($"Branch: {branchName} already exists.", nameof(branchName));
+                }
             }
 
-            branches.Add(branch.Trim());
+            branches.Add(branchName.Trim());
+
             ActivityBuilder.CurrentActivity.Properties["Forks"] = JToken.FromObject(branches);
 
-            ActivityBuilder.When(branch);
+            ActivityBuilder.When(branchName);
 
             branchBuilder.Invoke(ActivityBuilder);
 
