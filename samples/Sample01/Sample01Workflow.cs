@@ -25,9 +25,10 @@ namespace Sample01
                     x.PropertyName = "Value";
                     x.Value = new JavaScriptExpr<object>("'Awesome!'");
                 })
-                .Then<ConsoleWriteLineTask>(x => x.Text = new LiquidExpr("Value has set: {{Workflow.Properties['Value']}}"))
+                .Then<ConsoleWriteLineTask>(x =>
+                    x.Text = new LiquidExpr("Value has set: {{Workflow.Properties['Value']}}"))
                 .Then<ConsoleWriteLineTask>(x => x.Text = new LiquidExpr("Then Fork"))
-                .Fork()
+                .Fork("fork1")
                 .Do("branch1", then => then.Then<ConsoleWriteLineTask>(log => log.Text = new LiquidExpr("Do branch1"))
                     .Then<SetPropertyTask>(
                         x =>
@@ -38,19 +39,19 @@ namespace Sample01
                     .Then<IfElseTask>(x => x.Condition = new JavaScriptExpr<bool>("property('Value')==3"),
                         b =>
                         {
-                            b.When(true).Then<ConsoleWriteLineTask>(x => x.Text = new LiquidExpr("'Value == 3' is false"));
-
-                            b.When(false).Then<ConsoleWriteLineTask>(x => x.Text = new LiquidExpr("Value is: {{Workflow.Properties['Value']}}"))
+                            b.When(false).Then<ConsoleWriteLineTask>(x =>
+                                    x.Text = new LiquidExpr("Value is: {{Workflow.Properties['Value']}}"))
                                 .Then<SetPropertyTask>(
                                     x =>
                                     {
                                         x.PropertyName = "Value";
                                         x.Value = new JavaScriptExpr<object>("'3'");
                                     })
-                                .Then<ConsoleWriteLineTask>(x => x.Text = new LiquidExpr("Value has set: {{Workflow.Properties['Value']}}"))
+                                .Then<ConsoleWriteLineTask>(x =>
+                                    x.Text = new LiquidExpr("Value has set: {{Workflow.Properties['Value']}}"))
                                 .Then<SwitchTask>(x =>
                                     {
-                                        x.Cases = new List<string> { "1", "2", "3" };
+                                        x.Cases = new List<string> {"1", "2", "3"};
                                         x.Expression = new JavaScriptExpr("property('Value')");
                                     },
                                     @switch =>
@@ -60,16 +61,18 @@ namespace Sample01
                                         @switch.When("2").Then<ConsoleWriteLineTask>(x =>
                                             x.Text = new LiquidExpr("@switch case 2"));
                                         @switch.When("3").Then<ConsoleWriteLineTask>(x =>
-                                            x.Text = new LiquidExpr("@switch case 3")).Connect("AddTask");
+                                            x.Text = new LiquidExpr("@switch case 3")).Connect("fork1_join");
                                     });
                         })
                 )
-                .Do("branch2", then => then.Then<ConsoleWriteLineTask>(x => x.Text = new LiquidExpr("Do branch2")))
-                .Do("branch3", then => then.Then<ConsoleWriteLineTask>(x => x.Text = new LiquidExpr("Do branch3")))
-                .Join(waitAll: false, "branch1", "branch2")
-                .Then<ConsoleWriteLineTask>(x => x.Text = new LiquidExpr("Joined"))
-                .Add<ConsoleWriteLineTask>("AddTask", x => x.Text = new LiquidExpr("{{Workflow.Properties['Value']}}"));
-
+                .Do("branch2",
+                    then => then.Then<ConsoleWriteLineTask>(x => x.Text = new LiquidExpr("Do branch2"))
+                        .Connect("fork1_join"))
+                .Do("branch3",
+                    then => then.Then<ConsoleWriteLineTask>(x => x.Text = new LiquidExpr("Do branch3"))
+                        .Connect("fork1_join"))
+                .Join("fork1_join", waitAll: false)
+                .Then<ConsoleWriteLineTask>(x => x.Text = new LiquidExpr("Joined"));
         }
     }
 }

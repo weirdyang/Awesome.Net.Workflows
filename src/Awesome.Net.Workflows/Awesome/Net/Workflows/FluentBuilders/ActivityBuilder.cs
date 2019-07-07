@@ -19,7 +19,6 @@ namespace Awesome.Net.Workflows.FluentBuilders
 
         public void Connect(string targetId, string outcome = "Done")
         {
-            //TODO: Check if this activity exists
             if (targetId.IsNullOrWhiteSpace())
             {
                 throw new ArgumentNullException(nameof(targetId));
@@ -84,10 +83,10 @@ namespace Awesome.Net.Workflows.FluentBuilders
             return activityBuilder;
         }
 
-        public IParallelActivityBuilder Fork()
+        public IParallelActivityBuilder Fork(string id = null)
         {
             var forkTask = (ForkTask)WorkflowBuilder.ActivityLibrary.GetActivityByName(typeof(ForkTask).Name);
-            var forkActivity = WorkflowBuilder.BuildActivity(forkTask);
+            var forkActivity = WorkflowBuilder.BuildActivity(forkTask, id: id);
 
             Connect(forkActivity.ActivityId);
 

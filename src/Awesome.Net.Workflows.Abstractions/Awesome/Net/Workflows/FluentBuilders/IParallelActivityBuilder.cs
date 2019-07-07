@@ -6,6 +6,6 @@ namespace Awesome.Net.Workflows.FluentBuilders
     {
         IActivityBuilder ActivityBuilder { get; }
         IParallelActivityBuilder Do(string branch, Action<IActivityBuilder> branchBuilder);
-        IActivityBuilder Join(bool waitAll = true, params string[] branches);
+        IActivityBuilder Join(string id, bool waitAll = true);
     }
 }

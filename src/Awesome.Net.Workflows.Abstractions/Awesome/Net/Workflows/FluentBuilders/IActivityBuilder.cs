@@ -15,6 +15,6 @@ namespace Awesome.Net.Workflows.FluentBuilders
         IActivityBuilder Then<TNext>(Action<TNext> setup = null, Action<IActivityBuilder> branch = null,
             string id = null) where TNext : IActivity;
         IActivityBuilder Add<TActivity>(string id, Action<TActivity> setup = null) where TActivity : IActivity;
-        IParallelActivityBuilder Fork();
+        IParallelActivityBuilder Fork(string id = null);
     }
 }

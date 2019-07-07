@@ -18,11 +18,11 @@ namespace Sample01
                 .BuildServiceProvider();
 
             var workflowManager = services.GetService<IWorkflowManager>();
-            var workflowBuilder = services.GetService<IWorkflowBuilder>();
-            await workflowManager.StartWorkflowAsync<Sample01Workflow>();
+            var ctx = await workflowManager.StartWorkflowAsync<Sample01Workflow>();
+            var json = JsonConvert.SerializeObject(ctx.WorkflowType);
 
-            var workflowType = workflowBuilder.Build<Sample01Workflow>();
-            var json = JsonConvert.SerializeObject(workflowType);
+            var workflowBuilder = services.GetService<IWorkflowBuilder>();
+            //var workflowType = workflowBuilder.Build<Sample01Workflow>();
 
             Console.ReadLine();
         }

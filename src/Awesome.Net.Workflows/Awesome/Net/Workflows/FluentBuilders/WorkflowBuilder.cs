@@ -84,8 +84,17 @@ namespace Awesome.Net.Workflows.FluentBuilders
         private List<Transition> CleanupTransitions()
         {
             var transitions = Transitions.Where(x => !x.DestinationActivityId.IsNullOrEmpty());
-            transitions = transitions.Where(transition => Activities.All(x => x.ActivityId == transition.DestinationActivityId)).ToList();
-            return transitions.ToList();
+            var validTransitions = new List<Transition>();
+            foreach (var transition in transitions)
+            {
+                var isValidTransition = Activities.Any(x => x.ActivityId == transition.DestinationActivityId);
+                if (isValidTransition)
+                {
+                    validTransitions.Add(transition);
+                }
+            }
+
+            return validTransitions;
         }
     }
 }
