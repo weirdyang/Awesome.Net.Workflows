@@ -17,7 +17,7 @@ namespace Awesome.Net.Liquid
 
     public static class LiquidOptionsExtensions
     {
-        public static LiquidOptions RegisterFilter<T>(this LiquidOptions options) where T : class, ILiquidFilter
+        public static LiquidOptions AddFilter<T>(this LiquidOptions options) where T : class, ILiquidFilter
         {
             options.Services.AddTransient<T>();
             var filterName = LiquidFilterNameAttribute.GetName(typeof(T));

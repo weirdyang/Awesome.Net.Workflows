@@ -13,16 +13,14 @@ namespace Awesome.Net.Workflows
 {
     public class MemoryWorkflowTypeStore : IWorkflowTypeStore
     {
-        protected readonly ConcurrentDictionary<Guid, WorkflowType> Query;
+        protected readonly ConcurrentDictionary<Guid, WorkflowType> Query = new ConcurrentDictionary<Guid, WorkflowType>();
         private readonly IEnumerable<IWorkflowTypePersistenceEventHandler> _handlers;
         public readonly ILogger<MemoryWorkflowTypeStore> _logger;
 
         public MemoryWorkflowTypeStore(
-            ConcurrentDictionary<Guid, WorkflowType> query,
             IEnumerable<IWorkflowTypePersistenceEventHandler> handlers,
             ILogger<MemoryWorkflowTypeStore> logger)
         {
-            Query = query;
             _handlers = handlers;
             _logger = logger;
         }

@@ -13,35 +13,43 @@ namespace Awesome.Net.Workflows
 {
     public static class Startup
     {
-        public static IServiceCollection AddWorkflow(this IServiceCollection services,
+        public static IServiceCollection ConfigureWorkflows(this IServiceCollection services,
             Action<WorkflowOptions> setupAction = null)
         {
+            WorkflowOptions options;
             if (services.Any(x => x.ServiceType == typeof(WorkflowOptions)))
             {
-                throw new InvalidOperationException("Workflow services already registered");
+                var sp = services.BuildServiceProvider();
+                options = sp.GetService<WorkflowOptions>();
+                setupAction?.Invoke(options);
             }
+            else
+            {
+                services.AddLogging();
+                services.AddLocalization();
 
-            var options = new WorkflowOptions(services);
-            setupAction?.Invoke(options);
-            options.AddDefaultWorkflowActivities();
-            services.AddSingleton(options);
+                services.ConfigureLiquid();
+                services.ConfigureScripting();
 
-            services.AddLiquid();
-            services.AddScripting();
+                options = new WorkflowOptions(services);
+                setupAction?.Invoke(options);
+                options.AddDefaultWorkflowActivities();
+                services.AddSingleton(options);
 
-            services.AddTransient<IActivityLibrary, ActivityLibrary>();
-            services.AddTransient<IWorkflowManager, WorkflowManager>();
-            services.AddTransient<IDateTimeProvider, DateTimeProvider>();
-            services.AddTransient<IWorkflowBuilder, WorkflowBuilder>();
-            
-            services.AddSingleton<IWorkflowTypeStore, MemoryWorkflowTypeStore>();
-            services.AddSingleton<IWorkflowStore, MemoryWorkflowStore>();
-            services.AddSingleton<ISecurityTokenService, SecurityTokenService>();
-            services.AddSingleton<IWorkflowExpressionEvaluator, WorkflowExpressionEvaluator>();
-            services.AddSingleton<IExpressionEvaluator, JavaScriptExpressionEvaluator>();
-            services.AddSingleton<IExpressionEvaluator, LiquidExpressionEvaluator>();
+                services.AddTransient<IActivityLibrary, ActivityLibrary>();
+                services.AddTransient<IWorkflowManager, WorkflowManager>();
+                services.AddTransient<IDateTimeProvider, DateTimeProvider>();
+                services.AddTransient<IWorkflowBuilder, WorkflowBuilder>();
 
-            services.RegisterWorkflowExecutionEventHandler<DefaultWorkflowExecutionEventHandler>();
+                services.AddSingleton<IWorkflowTypeStore, MemoryWorkflowTypeStore>();
+                services.AddSingleton<IWorkflowStore, MemoryWorkflowStore>();
+                services.AddSingleton<ISecurityTokenService, SecurityTokenService>();
+                services.AddSingleton<IWorkflowExpressionEvaluator, WorkflowExpressionEvaluator>();
+                services.AddSingleton<IExpressionEvaluator, JavaScriptExpressionEvaluator>();
+                services.AddSingleton<IExpressionEvaluator, LiquidExpressionEvaluator>();
+
+                services.RegisterWorkflowExecutionEventHandler<DefaultWorkflowExecutionEventHandler>();
+            }
 
             return services;
         }
@@ -67,22 +75,31 @@ namespace Awesome.Net.Workflows
             return services;
         }
 
+        public static IServiceCollection AddWorkflowActivity<T>(this IServiceCollection services) where T : IActivity
+        {
+            var sp = services.BuildServiceProvider();
+            var options = sp.GetService<WorkflowOptions>();
+            options.AddActivity<T>();
+
+            return services;
+        }
+
         private static void AddDefaultWorkflowActivities(this WorkflowOptions options)
         {
             // Primitives
-            options.RegisterActivity<CorrelateTask>()
-                .RegisterActivity<LogTask>()
-                .RegisterActivity<SetOutputTask>()
-                .RegisterActivity<SetPropertyTask>()
-                .RegisterActivity<MissingActivity>();
+            options.AddActivity<CorrelateTask>()
+                .AddActivity<LogTask>()
+                .AddActivity<SetOutputTask>()
+                .AddActivity<SetPropertyTask>();
 
             // Control Flow
-            options.RegisterActivity<IfElseTask>()
-                .RegisterActivity<ForEachTask>()
-                .RegisterActivity<ForkTask>()
-                .RegisterActivity<JoinTask>()
-                .RegisterActivity<ScriptTask>()
-                .RegisterActivity<WhileLoopTask>();
+            options.AddActivity<IfElseTask>()
+                .AddActivity<ForEachTask>()
+                .AddActivity<ForkTask>()
+                .AddActivity<JoinTask>()
+                .AddActivity<ScriptTask>()
+                .AddActivity<SwitchTask>()
+                .AddActivity<WhileLoopTask>();
         }
     }
 }

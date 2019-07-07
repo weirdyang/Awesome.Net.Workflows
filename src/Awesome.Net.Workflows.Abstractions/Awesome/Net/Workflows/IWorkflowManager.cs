@@ -70,7 +70,7 @@ namespace Awesome.Net.Workflows
             object input = null,
             string correlationId = null)
         {
-            return workflowManager.TriggerEventAsync(typeName, input.AsDictionary(), correlationId);
+            return workflowManager.TriggerEventAsync(typeName, input?.AsDictionary(), correlationId);
         }
 
         /// <summary>

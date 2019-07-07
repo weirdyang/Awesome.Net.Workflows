@@ -23,6 +23,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Awesome.Net.Scripting", "sr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Awesome.Net.Extensions", "src\Awesome.Net.Extensions\Awesome.Net.Extensions.csproj", "{BB9E5A38-D1BD-468D-93DD-6180216DA29A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample01", "samples\Sample01\Sample01.csproj", "{A6642757-6EB8-44EF-87E8-B0532EF6DFCB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{46EA4EA7-3C78-4CF7-BD4F-B5CAAC5CC94C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -49,6 +53,10 @@ Global
 		{BB9E5A38-D1BD-468D-93DD-6180216DA29A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BB9E5A38-D1BD-468D-93DD-6180216DA29A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BB9E5A38-D1BD-468D-93DD-6180216DA29A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A6642757-6EB8-44EF-87E8-B0532EF6DFCB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A6642757-6EB8-44EF-87E8-B0532EF6DFCB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A6642757-6EB8-44EF-87E8-B0532EF6DFCB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A6642757-6EB8-44EF-87E8-B0532EF6DFCB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -59,6 +67,7 @@ Global
 		{78D0A9AE-2259-4407-BD3E-7E074430B3BB} = {97B9B8D3-67BF-44E0-9576-B4314A8ACC10}
 		{4934AF3F-C6C5-4C1E-ABF3-32AE7767C923} = {97B9B8D3-67BF-44E0-9576-B4314A8ACC10}
 		{BB9E5A38-D1BD-468D-93DD-6180216DA29A} = {97B9B8D3-67BF-44E0-9576-B4314A8ACC10}
+		{A6642757-6EB8-44EF-87E8-B0532EF6DFCB} = {46EA4EA7-3C78-4CF7-BD4F-B5CAAC5CC94C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D78A8F1E-DF78-411A-9152-EFECE121CDBC}

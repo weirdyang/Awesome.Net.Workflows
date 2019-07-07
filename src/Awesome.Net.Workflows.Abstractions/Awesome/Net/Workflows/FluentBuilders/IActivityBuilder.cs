@@ -8,14 +8,13 @@ namespace Awesome.Net.Workflows.FluentBuilders
     {
         IWorkflowBuilder WorkflowBuilder { get; }
         ActivityRecord CurrentActivity { get; }
-        IActivityBuilder Connect(string targetId, string outcome = "Done");
-        IActivityBuilder Connect(Func<string> targetIdFunc, string outcome = "Done");
+        void Connect(string targetId, string outcome = "Done");
+        void Connect(Func<string> targetIdFunc, string outcome = "Done");
         IActivityBuilder When(bool outcome);
         IActivityBuilder When(string outcome = "Done");
-
         IActivityBuilder Then<TNext>(Action<TNext> setup = null, Action<IActivityBuilder> branch = null,
             string id = null) where TNext : IActivity;
-
+        IActivityBuilder Add<TActivity>(string id, Action<TActivity> setup = null) where TActivity : IActivity;
         IParallelActivityBuilder Fork();
     }
 }

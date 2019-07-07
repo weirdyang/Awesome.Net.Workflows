@@ -8,8 +8,8 @@ namespace Awesome.Net.Workflows.FluentBuilders
     public interface IWorkflowBuilder
     {
         IActivityLibrary ActivityLibrary { get; }
-        List<ActivityRecord> Activities { get; }
-        List<Transition> Transitions { get; }
+        List<ActivityRecord> Activities { get; set; }
+        List<Transition> Transitions { get; set; }
         IActivityBuilder StartWith<T>(Action<T> setup = null, string id = null) where T : IActivity;
         ActivityRecord BuildActivity<T>(T activity = default, Action<T> setup = null, string id = null,
             bool addToWorkflow = true)

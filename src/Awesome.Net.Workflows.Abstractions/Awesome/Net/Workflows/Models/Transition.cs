@@ -10,7 +10,7 @@ namespace Awesome.Net.Workflows.Models
         public Guid Id { get; set; }
 
         /// <summary>
-        /// The source <see cref="ActivityRecord.Id"/>
+        /// The source <see cref="ActivityRecord.ActivityId"/>
         /// </summary>
         public string SourceActivityId { get; set; }
 
@@ -20,7 +20,7 @@ namespace Awesome.Net.Workflows.Models
         public string SourceOutcomeName { get; set; }
 
         /// <summary>
-        /// The destination <see cref="ActivityRecord.Id"/>
+        /// The destination <see cref="ActivityRecord.ActivityId"/>
         /// </summary>
         public string DestinationActivityId { get; set; }
     }

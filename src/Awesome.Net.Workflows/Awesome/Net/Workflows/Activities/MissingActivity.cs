@@ -31,8 +31,8 @@ namespace Awesome.Net.Workflows.Activities
             return Noop();
         }
 
-        public MissingActivity(IServiceProvider serviceProvider, ActivityRecord missingActivityRecord) : base(
-            serviceProvider)
+        public MissingActivity(IServiceProvider serviceProvider,
+            ActivityRecord missingActivityRecord) : base(serviceProvider)
         {
             MissingActivityRecord = missingActivityRecord;
         }

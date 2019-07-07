@@ -9,8 +9,8 @@ namespace Awesome.Net.Workflows.FluentBuilders
     public class WorkflowBuilder : IWorkflowBuilder
     {
         public IActivityLibrary ActivityLibrary { get; }
-        public List<ActivityRecord> Activities => new List<ActivityRecord>();
-        public List<Transition> Transitions => new List<Transition>();
+        public List<ActivityRecord> Activities { get; set; } = new List<ActivityRecord>();
+        public List<Transition> Transitions { get; set; } = new List<Transition>();
 
         public WorkflowBuilder(IActivityLibrary activityLibrary)
         {
@@ -28,23 +28,23 @@ namespace Awesome.Net.Workflows.FluentBuilders
         public ActivityRecord BuildActivity<T>(T activity = default, Action<T> setup = null, string id = null,
             bool addToWorkflow = true) where T : IActivity
         {
-            activity = activity == null ? (T) ActivityLibrary.GetActivityByName(typeof(T).Name) : activity;
+            activity = activity == null ? (T)ActivityLibrary.GetActivityByName(typeof(T).Name) : activity;
             setup?.Invoke(activity);
             var activityRecord = ActivityRecord.FromActivity(activity);
             if (id.IsNullOrWhiteSpace())
             {
-                activityRecord.Id = $"{RandomHelper.Generate26UniqueId()}";
+                activityRecord.ActivityId = $"{RandomHelper.Generate26UniqueId()}";
             }
             else
             {
-                var e = Activities.FirstOrDefault(x => x.Id == id);
+                var e = Activities.FirstOrDefault(x => x.ActivityId == id);
                 if (e != null)
                 {
                     throw new ArgumentException($"ActivityId: {id} already exists.", nameof(id));
                 }
                 else
                 {
-                    activityRecord.Id = id;
+                    activityRecord.ActivityId = id;
                 }
             }
 
@@ -74,10 +74,18 @@ namespace Awesome.Net.Workflows.FluentBuilders
                 IsSingleton = workflow.IsSingleton,
                 DeleteFinishedWorkflows = workflow.DeleteFinishedWorkflows,
                 Activities = Activities,
-                Transitions = Transitions
+                Transitions = CleanupTransitions()
             };
 
             return workflowType;
+        }
+
+        // Remove invalid transitions
+        private List<Transition> CleanupTransitions()
+        {
+            var transitions = Transitions.Where(x => !x.DestinationActivityId.IsNullOrEmpty());
+            transitions = transitions.Where(transition => Activities.All(x => x.ActivityId == transition.DestinationActivityId)).ToList();
+            return transitions.ToList();
         }
     }
 }

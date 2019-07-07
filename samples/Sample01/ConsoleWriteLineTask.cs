@@ -1,23 +1,17 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Awesome.Net.Workflows.Activities;
 using Awesome.Net.Workflows.Contexts;
 using Awesome.Net.Workflows.Expressions;
 using Awesome.Net.Workflows.Models;
 using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
 
-namespace Awesome.Net.Workflows.Activities
+namespace Sample01
 {
-    public class LogTask : TaskActivity
+    public class ConsoleWriteLineTask : TaskActivity
     {
-        public override LocalizedString Category => T["Primitives"];
-
-        public LogLevel LogLevel
-        {
-            get => GetProperty(() => LogLevel.Information);
-            set => SetProperty(value);
-        }
+        public override LocalizedString Category => T["Console"];
 
         public WorkflowExpression<string> Text
         {
@@ -35,13 +29,11 @@ namespace Awesome.Net.Workflows.Activities
             ActivityExecutionContext activityContext)
         {
             var text = await ExpressionEvaluator.EvaluateAsync(Text, workflowContext);
-            var logLevel = LogLevel;
             Console.WriteLine(text);
-            Logger.Log(logLevel, 0, text, null, (state, error) => state.ToString());
             return Outcomes("Done");
         }
 
-        public LogTask(IServiceProvider serviceProvider) : base(serviceProvider)
+        public ConsoleWriteLineTask(IServiceProvider serviceProvider) : base(serviceProvider)
         {
         }
     }

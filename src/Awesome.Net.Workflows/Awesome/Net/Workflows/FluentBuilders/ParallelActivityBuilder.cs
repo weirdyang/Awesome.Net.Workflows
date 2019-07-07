@@ -19,14 +19,24 @@ namespace Awesome.Net.Workflows.FluentBuilders
         public IParallelActivityBuilder Do(string branch, Action<IActivityBuilder> branchBuilder)
         {
             if (branch == null) throw new ArgumentNullException(nameof(branch));
-            var branches = ActivityBuilder.CurrentActivity.Properties["Forks"].ToObject<IList<string>>();
-            if (branches.Any(x => x == branch))
+
+            IList<string> branches;
+            if (ActivityBuilder.CurrentActivity.Properties.ContainsKey("Forks"))
             {
-                throw new ArgumentException($"Branch: {branch} already exists.", nameof(branch));
+                branches = ActivityBuilder.CurrentActivity.Properties["Forks"].ToObject<IList<string>>();
+
+                if (branches.Any(x => x == branch))
+                {
+                    throw new ArgumentException($"Branch: {branch} already exists.", nameof(branch));
+                }
+            }
+            else
+            {
+                branches = new List<string>();
             }
 
             branches.Add(branch.Trim());
-            ActivityBuilder.CurrentActivity.Properties["Forks"] = new JObject(branches);
+            ActivityBuilder.CurrentActivity.Properties["Forks"] = JToken.FromObject(branches);
 
             ActivityBuilder.When(branch);
 
@@ -51,8 +61,7 @@ namespace Awesome.Net.Workflows.FluentBuilders
                 throw new ArgumentException($"Join branch count must be greater than 2.", nameof(branches));
             }
 
-            var joinTask =
-                (JoinTask) ActivityBuilder.WorkflowBuilder.ActivityLibrary.GetActivityByName(typeof(JoinTask).Name);
+            var joinTask = (JoinTask)ActivityBuilder.WorkflowBuilder.ActivityLibrary.GetActivityByName(typeof(JoinTask).Name);
             joinTask.Mode = waitAll ? JoinTask.JoinMode.WaitAll : JoinTask.JoinMode.WaitAny;
             var joinActivity = ActivityBuilder.WorkflowBuilder.BuildActivity(joinTask);
 
@@ -63,8 +72,8 @@ namespace Awesome.Net.Workflows.FluentBuilders
                 var transition = new Transition
                 {
                     Id = Guid.NewGuid(),
-                    SourceActivityId = activity.Id,
-                    DestinationActivityId = joinActivity.Id,
+                    SourceActivityId = activity.ActivityId,
+                    DestinationActivityId = joinActivity.ActivityId,
                     SourceOutcomeName = "Done"
                 };
                 ActivityBuilder.WorkflowBuilder.Transitions.Add(transition);
@@ -81,7 +90,7 @@ namespace Awesome.Net.Workflows.FluentBuilders
             var lastBranchActivities = new List<ActivityRecord>();
             var nextTransitions = ActivityBuilder.WorkflowBuilder.Transitions
                 .WhereIf(branches.Any(), x => branches.Contains(x.SourceOutcomeName))
-                .Where(x => x.SourceActivityId == sourceActivity.Id).ToList();
+                .Where(x => x.SourceActivityId == sourceActivity.ActivityId).ToList();
 
             if (!nextTransitions.Any())
             {
@@ -91,7 +100,7 @@ namespace Awesome.Net.Workflows.FluentBuilders
             foreach (var transition in nextTransitions)
             {
                 var nextActivity =
-                    ActivityBuilder.WorkflowBuilder.Activities.First(x => x.Id == transition.DestinationActivityId);
+                    ActivityBuilder.WorkflowBuilder.Activities.First(x => x.ActivityId == transition.DestinationActivityId);
                 lastBranchActivities.AddRange(GetBranchLastActivities(nextActivity, branches));
             }
 

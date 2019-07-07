@@ -5,7 +5,7 @@ namespace Awesome.Net.Workflows.Models
 {
     public class ActivityRecord
     {
-        public string Id { get; set; }
+        public string ActivityId { get; set; }
 
         /// <summary>
         /// The type of the activity.

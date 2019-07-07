@@ -17,8 +17,14 @@ namespace Awesome.Net.Workflows.FluentBuilders
 
         public ActivityRecord CurrentActivity { get; }
 
-        public IActivityBuilder Connect(string targetId, string outcome = "Done")
+        public void Connect(string targetId, string outcome = "Done")
         {
+            //TODO: Check if this activity exists
+            if (targetId.IsNullOrWhiteSpace())
+            {
+                throw new ArgumentNullException(nameof(targetId));
+            }
+
             var transition = WorkflowBuilder.Transitions.FirstOrDefault(x => x.DestinationActivityId.IsNullOrEmpty());
             if (transition == null)
             {
@@ -27,13 +33,11 @@ namespace Awesome.Net.Workflows.FluentBuilders
 
             transition = WorkflowBuilder.Transitions.First(x => x.DestinationActivityId.IsNullOrEmpty());
             transition.DestinationActivityId = targetId;
-
-            return this;
         }
 
-        public IActivityBuilder Connect(Func<string> targetIdFunc, string outcome = "Done")
+        public void Connect(Func<string> targetIdFunc, string outcome = "Done")
         {
-            return Connect(targetIdFunc(), outcome);
+            Connect(targetIdFunc(), outcome);
         }
 
         public IActivityBuilder When(bool outcome)
@@ -52,7 +56,7 @@ namespace Awesome.Net.Workflows.FluentBuilders
             var transition = new Transition
             {
                 Id = Guid.NewGuid(),
-                SourceActivityId = CurrentActivity.Id,
+                SourceActivityId = CurrentActivity.ActivityId,
                 DestinationActivityId = null,
                 SourceOutcomeName = outcome
             };
@@ -65,7 +69,7 @@ namespace Awesome.Net.Workflows.FluentBuilders
         {
             var next = WorkflowBuilder.BuildActivity(default, setup, id);
 
-            Connect(next.Id);
+            Connect(next.ActivityId);
 
             var activityBuilder = new ActivityBuilder(WorkflowBuilder, next);
             branch?.Invoke(activityBuilder);
@@ -73,14 +77,22 @@ namespace Awesome.Net.Workflows.FluentBuilders
             return activityBuilder;
         }
 
+        public IActivityBuilder Add<TActivity>(string id, Action<TActivity> setup = null) where TActivity : IActivity
+        {
+            var activity = WorkflowBuilder.BuildActivity(default, setup, id);
+            var activityBuilder = new ActivityBuilder(WorkflowBuilder, activity);
+            return activityBuilder;
+        }
+
         public IParallelActivityBuilder Fork()
         {
-            var forkTask = (ForkTask) WorkflowBuilder.ActivityLibrary.GetActivityByName(typeof(ForkTask).Name);
+            var forkTask = (ForkTask)WorkflowBuilder.ActivityLibrary.GetActivityByName(typeof(ForkTask).Name);
             var forkActivity = WorkflowBuilder.BuildActivity(forkTask);
 
-            Connect(forkActivity.Id);
+            Connect(forkActivity.ActivityId);
 
             var activityBuilder = new ActivityBuilder(WorkflowBuilder, forkActivity);
+
             var builder = new ParallelActivityBuilder(activityBuilder);
             return builder;
         }

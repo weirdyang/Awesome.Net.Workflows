@@ -26,7 +26,7 @@ namespace Awesome.Net.Workflows.Contexts
             LastResult = lastResult;
             WorkflowType = workflowType;
             Workflow = workflow;
-            Activities = activities.ToDictionary(x => x.ActivityRecord.Id);
+            Activities = activities.ToDictionary(x => x.ActivityRecord.ActivityId);
         }
 
         public Workflow Workflow { get; }

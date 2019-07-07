@@ -26,7 +26,7 @@ namespace Awesome.Net.Workflows
 
     public static class WorkflowOptionsExtensions
     {
-        public static WorkflowOptions RegisterActivity<T>(this WorkflowOptions options) where T : IActivity
+        public static WorkflowOptions AddActivity<T>(this WorkflowOptions options) where T : IActivity
         {
             if (!options.IsActivityRegistered<T>())
             {

@@ -46,13 +46,13 @@ namespace Awesome.Net.Workflows.Expressions
 
             var methodProviders = expressionContext.ScopedMethodProviders;
 
-            var scopedMethodProviders = arguments.As<List<IScriptMethodProvider>>();
-            if (scopedMethodProviders != null)
+            var scopedMethodProviders = arguments?.As<List<IScriptMethodProvider>>();
+            if (scopedMethodProviders != null && scopedMethodProviders.Any())
             {
                 methodProviders = methodProviders.Concat(scopedMethodProviders).ToList();
             }
 
-            return (T) _scriptingManager.Evaluate(directive, null, null, methodProviders);
+            return (T)_scriptingManager.Evaluate(directive, null, null, methodProviders);
         }
     }
 }

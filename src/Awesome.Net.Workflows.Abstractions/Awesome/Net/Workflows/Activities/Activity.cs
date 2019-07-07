@@ -35,7 +35,7 @@ namespace Awesome.Net.Workflows.Activities
 
         public virtual string TypeName => GetType().Name;
         public abstract LocalizedString Category { get; }
-        public virtual JObject Properties { get; set; }
+        public virtual JObject Properties { get; set; } = new JObject();
 
         public virtual bool HasEditor => true;
 

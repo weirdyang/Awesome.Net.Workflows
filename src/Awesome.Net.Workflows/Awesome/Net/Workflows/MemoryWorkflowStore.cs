@@ -13,7 +13,7 @@ namespace Awesome.Net.Workflows
 {
     public class MemoryWorkflowStore : IWorkflowStore
     {
-        protected readonly ConcurrentDictionary<Guid, Workflow> Query;
+        protected readonly ConcurrentDictionary<Guid, Workflow> Query = new ConcurrentDictionary<Guid, Workflow>();
         private readonly IEnumerable<IWorkflowPersistenceHandler> _handlers;
         private readonly ILogger<MemoryWorkflowStore> _logger;
 
@@ -22,7 +22,6 @@ namespace Awesome.Net.Workflows
         {
             _handlers = handlers;
             _logger = logger;
-            Query = new ConcurrentDictionary<Guid, Workflow>();
         }
 
         public Task<int> CountAsync(string workflowTypeId = null)
@@ -107,7 +106,7 @@ namespace Awesome.Net.Workflows
             var blockingActivityIdList = blockingActivityIds.ToList();
             var query = Query.Select(x => x.Value).Where(
                 x => x.WorkflowTypeId == workflowTypeId);
-            query = query.Where(x => x.BlockingActivities.Any(a => blockingActivityIdList.Contains(a.Id)));
+            query = query.Where(x => x.BlockingActivities.Any(a => blockingActivityIdList.Contains(a.ActivityId)));
             return Task.FromResult(query);
         }
 
