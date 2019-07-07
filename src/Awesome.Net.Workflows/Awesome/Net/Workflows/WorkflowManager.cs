@@ -41,6 +41,7 @@ namespace Awesome.Net.Workflows
         {
             var workflow = new Workflow
             {
+                Id = Guid.NewGuid(),
                 WorkflowTypeId = workflowType.WorkflowTypeId,
                 Status = WorkflowStatus.Idle,
                 State = JObject.FromObject(new WorkflowState
@@ -96,7 +97,7 @@ namespace Awesome.Net.Workflows
                 activity = new MissingActivity(ServiceProvide, activityRecord);
             }
 
-            var context = new ActivityExecutionContext {ActivityRecord = activityRecord, Activity = activity};
+            var context = new ActivityExecutionContext { ActivityRecord = activityRecord, Activity = activity };
 
             return Task.FromResult(context);
         }

@@ -4,7 +4,9 @@ using Awesome.Net.Workflows;
 using Awesome.Net.Workflows.Activities;
 using Awesome.Net.Workflows.Expressions.Syntaxs;
 using Awesome.Net.Workflows.FluentBuilders;
+using Awesome.Net.Workflows.Models;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 
 namespace Sample02
 {
@@ -26,8 +28,13 @@ namespace Sample02
                 .Then<ConsoleWriteLineTask>(x => x.Text = new LiquidExpr("Value has set: {{Workflow.Properties['Value']}}"))
                 .Build("DemoWorkflow2");
 
+            var workflowTypeJson = JsonConvert.SerializeObject(workflowType);
+
+            var loader = services.GetService<IWorkflowTypeLoader>();
+            var fromJsonType = loader.Load(workflowTypeJson, JsonConvert.DeserializeObject<WorkflowType>);
+
             var workflowManager = services.GetService<IWorkflowManager>();
-            await workflowManager.StartWorkflowAsync(workflowType);
+            await workflowManager.StartWorkflowAsync(fromJsonType);
 
             Console.ReadLine();
         }

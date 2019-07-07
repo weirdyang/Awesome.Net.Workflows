@@ -47,6 +47,7 @@ namespace Awesome.Net.Workflows
                 services.AddSingleton<IWorkflowExpressionEvaluator, WorkflowExpressionEvaluator>();
                 services.AddSingleton<IExpressionEvaluator, JavaScriptExpressionEvaluator>();
                 services.AddSingleton<IExpressionEvaluator, LiquidExpressionEvaluator>();
+                services.AddSingleton<IWorkflowTypeLoader, WorkflowTypeLoader>();
 
                 services.RegisterWorkflowExecutionEventHandler<DefaultWorkflowExecutionEventHandler>();
             }
