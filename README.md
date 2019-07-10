@@ -171,6 +171,16 @@ public class ConsoleWriteLineTask : TaskActivity
 
 与 ABP vNext 的集成（TODO）
 
+## 线路图
+
+（TODO）
+
+- 实现更多活动
+- 更加详细的文档
+- RabbitMQ 集成
+- Redis 集成
+- ...
+
 ## 致敬
 
 [**Orchard Core**](https://github.com/OrchardCMS/OrchardCore/)
