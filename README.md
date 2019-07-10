@@ -14,9 +14,7 @@ OrchardCore 附带了强大的工作流模块，其使用的 Liquid & JavaScript
 
 ## 如何使用
 
-```pm
 ~~Install-Package Awesome.Net.Workflows~~ (尚未发布)
-```
 
 ```C#
 class Program
