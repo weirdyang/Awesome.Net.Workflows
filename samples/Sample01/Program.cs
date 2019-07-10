@@ -1,9 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Awesome.Net.Workflows;
-using Awesome.Net.Workflows.Models;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
 
 namespace Sample01
 {
