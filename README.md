@@ -99,7 +99,7 @@ public class Sample01Workflow : IWorkflow
 
 ### JSON 工作流定义
 
-使用 **IWorkflowTypeLoader** 可以允许您加载来自 JSON 文件（也可以是 XAML/YAML ，这取决于您的 deserializer）：
+使用 **IWorkflowTypeLoader** 可以允许您加载来自 JSON 文件的工作流定义（也可以是 XAML/YAML ，这取决于您的 deserializer）：
 
 ```C#
 public class WorkflowTypeLoader : IWorkflowTypeLoader
