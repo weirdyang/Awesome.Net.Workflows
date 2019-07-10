@@ -13,8 +13,7 @@ namespace Awesome.Net.Workflows
 {
     public static class Startup
     {
-        public static IServiceCollection ConfigureWorkflows(this IServiceCollection services,
-            Action<WorkflowOptions> setupAction = null)
+        public static IServiceCollection ConfigureWorkflows(this IServiceCollection services, Action<WorkflowOptions> setupAction = null)
         {
             WorkflowOptions options;
             if (services.Any(x => x.ServiceType == typeof(WorkflowOptions)))
