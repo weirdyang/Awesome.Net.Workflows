@@ -6,9 +6,12 @@
 Install-Package Awesome.Net.Extensions
 ```
 
-## 说明
+## Description
 
-该库扩展了一些常用方法&Helpers。
-大部分来自：
-[```Volo.Abp.Core```](https://github.com/abpframework/abp/tree/dev/framework/src/Volo.Abp.Core)
+This module extends some common methods &Helpers.
 
+## CREDITS
+
+### ABP
+#### [``Volo.Abp.Core``](https://github.com/abpframework/abp/tree/dev/framework/src/Volo.Abp.Core)
+2013 - 2019 © Volosoft. Open source license with LGPLv3.0.
